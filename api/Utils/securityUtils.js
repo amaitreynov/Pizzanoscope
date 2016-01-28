@@ -30,17 +30,14 @@ module.exports.createToken = function createToken (user) {
     return token;
 };
 
-module.exports.createCookie = function(jsonToken, url, req, res) {
+module.exports.createCookie = function(jsonToken, req, res, next) {
 
     new Cookies(req, res).set('access_token', jsonToken, {
         httpOnly: true,
         secure: false
     });
 
-    if(url == null)
-        res.redirect('/api/product/getAll');
-    else
-        res.redirect(url);
+    return next();
 
 };
 

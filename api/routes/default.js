@@ -16,11 +16,11 @@ var mongoose = require('mongoose'),
 
 
     router.get(("/"), function (req, res) {
-        res.render('SignUpLogin/login', {title: 'Login'});
+        res.render('Login/Login', {title: 'Login'});
     });
 
-    router.get(("/login"), function (req, res) {
-        res.render('SignUpLogin/login', {title: 'Login'});
+    router.get(("/Login"), function (req, res) {
+        res.render('Login/Login', {title: 'Login'});
     });
 
     router.get(("/logout"), function (req, res) {
@@ -29,7 +29,7 @@ var mongoose = require('mongoose'),
         res.redirect('/');
     });
 
-    router.post(("/login"), function (req, res, next) {
+    router.post(("/Login"), function (req, res, next) {
         userUtil.authenticate(req, res, next);
     });
 

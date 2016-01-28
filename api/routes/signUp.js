@@ -5,7 +5,7 @@ var User = mongoose.model("User");
 var Class = mongoose.model("Class");
 
 router.get(("/"), function (req, res) {
-    res.render('SignUpLogin/signUp', {title: 'SignUpPage'});
+    res.render('SignUp/signUp', {title: 'SignUpPage'});
 });
 
 router.post('/addUser' , function(req, res)
@@ -50,7 +50,7 @@ router.post('/addUser' , function(req, res)
                             else
                             {
                                 console.log('User saved successfully');
-                                res.render('SignUpLogin/signUpSuccess', {registerSuccess: "Merci, vous êtes bien inscrit !", username: req.body.username, pass: req.body.pass });
+                                res.render('SignUp/signUpSuccess', {registerSuccess: "Merci, vous êtes bien inscrit !", username: req.body.username, pass: req.body.pass });
                             }
                         });
                     }
@@ -58,7 +58,7 @@ router.post('/addUser' , function(req, res)
                     {
                         registerErr = "L'utilisateur existe déjà !";
                         console.log(registerErr);
-                        res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
+                        res.render('SignUp/signUp', {registerErr: registerErr, firstname: req.body.firstname,
                                                                         lastname: req.body.lastname,
                                                                         username: req.body.username,
                                                                         email: m_mail,
@@ -74,7 +74,7 @@ router.post('/addUser' , function(req, res)
             {
                 registerErr = "Votre adresse mail n'est pas une adresse Ynov !";
                 console.log(registerErr);
-                res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
+                res.render('SignUp/signUp', {registerErr: registerErr, firstname: req.body.firstname,
                                                                 lastname: req.body.lastname,
                                                                 username: req.body.username,
                                                                 email: m_mail,
@@ -88,7 +88,7 @@ router.post('/addUser' , function(req, res)
         {
             registerErr = "Les deux mots de passe ne sont pas identiques !";
             console.log(registerErr);
-            res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
+            res.render('SignUpLog/signUp', {registerErr: registerErr, firstname: req.body.firstname,
                                                             lastname: req.body.lastname,
                                                             username: req.body.username,
                                                             email: m_mail,
@@ -102,7 +102,7 @@ router.post('/addUser' , function(req, res)
     {
         registerErr = "Les deux adresses mails ne sont pas identiques !";
         console.log(registerErr);
-        res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
+        res.render('SignUp/signUp', {registerErr: registerErr, firstname: req.body.firstname,
                                                         lastname: req.body.lastname,
                                                         username: req.body.username,
                                                         email: m_mail,

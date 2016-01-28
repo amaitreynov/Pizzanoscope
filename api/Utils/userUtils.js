@@ -19,22 +19,22 @@ module.exports.authenticate = function (req, res, next) {
 
     console.log("Processing authenticate middleware");
 
-    var username = req.body.username,
+    var email = req.body.email,
         password = req.body.password;
 
-    if (_.isEmpty(username) || _.isEmpty(password)) {
+    if (_.isEmpty(email) || _.isEmpty(password)) {
         return next(new UnauthorizedAccessError("401", {
             message: 'Invalid username or password'
         }));
     }
 
     User.findOne({
-        username: username
+        email: email
     }, function (err, user) {
         if (err || !user) {
             console.log(err);
             return next(new UnauthorizedAccessError("401", {
-                message: 'Invalid username or password'
+                message: 'Invalid email or password'
             }));
         }
 
@@ -46,10 +46,12 @@ module.exports.authenticate = function (req, res, next) {
                  secure: false      // for your dev environment => true for prod
                  });*/
 
-                securityUtil.createCookie(securityUtil.createToken(user), null, req, res);
+                securityUtil.createCookie(securityUtil.createToken(user), null, req, res, next);
+                res.redirect('/api/product/getAll');
+
             } else {
                 return next(new UnauthorizedAccessError("401", {
-                    message: 'Invalid username or password'
+                    message: 'Invalid email or password'
                 }));
             }
         });

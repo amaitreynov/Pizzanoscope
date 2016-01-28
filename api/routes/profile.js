@@ -4,6 +4,7 @@ var express = require('express'),
     User = mongoose.model('User'),
     Class = mongoose.model('Class'),
     bcrypt = require("bcryptjs"),
+    logger = require('log4js').getLogger('controller.profile'),
     Cookies = require("cookies");
 var utils = require("../Utils/securityUtils.js");
 var config = require('../config.json');
@@ -20,7 +21,7 @@ router.get('/', function(req, res) {
 });
 
 // TODO: Check why it throw an error (500)
-router.get('/profile', function(req, res) {
+router.get('/', function(req, res) {
     var token = new Cookies(req, res).get('access_token');
     var user = jwt.decode(token, config.secret);
     res.render('User/profile', { user : user });
@@ -35,7 +36,7 @@ router.get('/Profile/:value', function(req, res) {
 /* DELETE user */
 router.get('/delete/:value', function(req, res){
     utils.middleware(true, req, res, function() {
-        console.log(req.params.value);
+        logger.info(req.params.value);
         User.
             remove({_id: req.params.value}).
             exec(function(err, user){
@@ -59,7 +60,7 @@ router.post('/updUser', function(req, res, next) {
         {multi: true}
         ).exec(function(err) {
             if (err)
-                console.log(err.message);
+                logger.error(err.message);
             else
             {
 
@@ -77,7 +78,7 @@ router.post('/updUserPass', function(req, res, next) {
     if(req.body.password == '')
     {
         User.findOne({_id: req.body.userId}, function(err) {
-            if(err) console.log(err.message);
+            if(err) logger.error(err.message);
 
             res.redirect('/api/users/profile');
         });
@@ -101,10 +102,10 @@ router.post('/updUserPass', function(req, res, next) {
                             {_id: req.body.userIdPass},
                             {$set: {password: hash}}
                         ).exec(function (err) {
-                                if(err) console.log(err.message);
+                                if(err) logger.error(err.message);
 
                                 User.findOne({_id: req.body.userIdPass}, function(err,user) {
-                                    if(err) console.log(err.message);
+                                    if(err) logger.error(err.message);
 
                                     utils.createCookie(utils.createToken(user), '/api/users/Profile/Le mot de passe a été mis à jour !', req, res);
                                 });
@@ -146,9 +147,9 @@ router.get('/setup', function(req, res) {
         created_on: Date.now(),
         updated_at: Date.now()
     }).save(function(err) {
-            if (err) console.log(err);
+            if (err) logger.info(err);
 
-            console.log('User saved successfully');
+            logger.info('User saved successfully');
             res.json({ success: true });
         });
 });

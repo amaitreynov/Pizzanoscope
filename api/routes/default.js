@@ -8,6 +8,7 @@ var router = express.Router();
 
 var mongoose = require('mongoose'),
     userUtil = require("../Utils/userUtils.js"),
+    logger = require('log4js').getLogger('controller.default'),
     debug = require('debug')('app:routes:default' + process.pid),
     _ = require("lodash"),
     path = require('path'),

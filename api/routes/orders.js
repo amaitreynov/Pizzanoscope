@@ -1,5 +1,6 @@
 var express = require('express');
 var mongoose = require('mongoose');
+var logger = require('log4js').getLogger('controller.orders');
 var router = express.Router();
 var paypal = require('paypal-rest-sdk');
 var Cookies = require("cookies");
@@ -62,7 +63,7 @@ router.get('/paypal', function(req, res, next) {
         parseOrderPaypalJson(paymentDescription, cookieOrder);
         paypal.payment.create(paymentDescription, configSandbox, function (error, payment) {
             if (error) {
-                console.log(error);
+                logger.error(error);
             } else {
                 if (payment.payer.payment_method === 'paypal') {
                     //req.session.paymentId = payment.id;
@@ -124,16 +125,16 @@ function parseOrderPaypalJson(paymentDescription, order){
 router.get('/cleanOrder/:value1', function(req, res) {
 
     Order.findOne({_id: req.params.value1}, function(err,order) {
-        if(err) console.log(err.message);
+        if(err) logger.info(err.message);
 
         order.pizzaList.forEach(function(item) {
             Pizza.remove({_id: item}, function(err) {
-                if(err) console.log(err.message);
+                if(err) logger.info(err.message);
             });
         });
 
         Order.remove({_id: order._id}, function(err) {
-            if(err) console.log(err.message);
+            if(err) logger.info(err.message);
         });
     });
 

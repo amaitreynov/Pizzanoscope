@@ -4,6 +4,7 @@ var express = require('express'),
     User = mongoose.model('User'),
     Class = mongoose.model('Class'),
     bcrypt = require("bcryptjs"),
+    _ = require('lodash'),
     logger = require('log4js').getLogger('controller.profile'),
     Cookies = require("cookies");
 var utils = require("../Utils/securityUtils.js");

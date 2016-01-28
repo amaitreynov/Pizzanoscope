@@ -119,10 +119,7 @@ function parseOrderPaypalJson(paymentDescription, order){
     }
 }
 
-router.get('/cleanOrder', function(req, res) {
-    res.clearCookie('order');
-    res.redirect('/api/pizza/getAll');
-});
+
 
 router.get('/cleanOrder/:value1', function(req, res) {
 
@@ -144,71 +141,6 @@ router.get('/cleanOrder/:value1', function(req, res) {
     res.redirect('/api/pizza/getAll');
 });
 
-router.get('/addPizza/name/:value1/price/:value2', function(req, res) {
-    var cookieJson = new Cookies(req, res).get("order");
 
-    var firstPizza = new Pizza({
-        name: req.params.value1,
-        description: "Description Pizza",
-        price: req.params.value2.substr(0,2),
-        sizeType: "Large",
-        doughType: "Classic"
-    });
-
-    var pizzaToAdd = new Pizza({
-        name: req.params.value1,
-        description: "Description Pizza",
-        price: req.params.value2.substr(0,2),
-        sizeType: "Large",
-        doughType: "Classic"
-    });
-
-    if(cookieJson == undefined || cookieJson == null) {
-        //console.log('----------------createdOrder------------');
-        var token = new Cookies(req, res).get('access_token');
-        var user = jwt.decode(token, config.secret);
-
-        firstPizza.save();
-        //IF order is not create, create a new order
-        var orderToInsert = new Order({
-            "pizzaList": [firstPizza],
-            "user": user,
-            "state": "toBePaid",
-            "paymentType": "PayPal"
-        });
-
-        orderToInsert.save();
-        Order.findOne({_id: orderToInsert._id}).populate("user").exec(function(err) {
-            if(err) console.log(err.message); else console.log('Populate User;');
-        });
-        Order.findOne({_id: orderToInsert._id}).populate("pizzaList").exec(function(err) {
-            if(err) console.log(err.message); else console.log('Populate Pizza');
-        });
-        //console.log('----------------createdOrder1------------');
-
-        new Cookies(req, res).set('order', JSON.stringify(orderToInsert), {
-            httpOnly: true,
-            secure: false      // for your dev environment => true for prod
-        });
-
-        return res.redirect('/api/pizza/getAll');
-    }
-    else
-    {
-        //console.log('------------insert Pizza----------------');
-        //Ajout de la pizza
-        pizzaToAdd.save();
-        var UpdatedOrder = UtilsOrder.addPizzaIntoOrder(pizzaToAdd, JSON.parse(new Cookies(req, res).get("order")));
-        Order.findOne({_id: UpdatedOrder._id}).populate("pizzaList").exec(function(err) {
-            if(err) console.log(err.message); else console.log('Populate Pizza');
-        });
-        //console.log('------------insert Pizza1----------------');
-        new Cookies(req, res).set('order', JSON.stringify(UpdatedOrder), {
-            httpOnly: true,
-            secure: false      // for your dev environment => true for prod
-        });
-        return res.redirect('/api/pizza/getAll');
-    }
-});
 
 module.exports = router;

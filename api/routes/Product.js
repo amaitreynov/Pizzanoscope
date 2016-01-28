@@ -48,48 +48,4 @@ router.get('/getAll', function (req, res) {
         });
 });
 
-
-router.get('/getAll', function(req, res) {
-    Pizza.
-        find().
-        exec(function(err, orders){
-            res.json(orders);
-        });
-});
-
-router.get('/del/:value1', function(req, res) {
-        var UpdateOrderToDelete = JSON.parse(new Cookies(req, res).get("order"));
-
-        if(UpdateOrderToDelete.pizzaList.length == 1)
-            res.redirect('/api/orders/cleanOrder/'+UpdateOrderToDelete._id);
-        else
-        {
-            // TODO: value1 seems to be unused, check var
-            Pizza.findOne({_id: req.params.value1}, function (err, returnedPizza) {
-                if (err) console.log(err.message);
-
-                UpdateOrderToDelete = UtilsOrder.deletePizzaIntoOrder(returnedPizza, UpdateOrderToDelete, function (orderToUpdate) {
-                    //console.log("Order to push into cookie:" + JSON.stringify(orderToUpdate._id));
-                    Pizza.remove({_id: returnedPizza._id}, function (err) {
-                        if (err) console.log(err.message);
-                        new Cookies(req, res).set('order', JSON.stringify(orderToUpdate), {
-                            httpOnly: true,
-                            secure: false      // for your dev environment => true for prod
-                        });
-                        // TODO: Exception may happen
-                        res.redirect('/api/pizza/getAll');
-                    });
-                });
-            });
-        }
-});
-
-router.get('/cleanPizzaAll', function(req, res) {
-        Pizza.remove(function (err) {
-            if (err) console.log(err.message);
-        });
-        return res.status(200).json({working: true});
-
-});
-
 module.exports = router;

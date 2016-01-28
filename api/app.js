@@ -9,9 +9,10 @@ var debug = require('debug')('app:' + process.pid),
    //mongoose_uri = process.env.MONGOOSE_URI || "mongodb://localhost:27017/pizzaNoScope",
     onFinished = require('on-finished'),
     NotFoundError = require(path.join(__dirname, "errors", "NotFoundError.js")),
-    users = require('./routes/users'),
+    profile = require('./routes/profile'),
     signUp = require('./routes/signUp'),
-    pizza = require('./routes/pizza'),
+    product = require('./routes/product'),
+    basket = require('./routes/basket'),
     orders = require('./routes/orders'),
     default_r = require('./routes/default'),
     admin = require('./routes/admin'),
@@ -110,9 +111,10 @@ app.use(function (req, res, next) {
 
 app.use("/", default_r);
 app.use("/api", default_r);
-app.use("/api/users", users);
+app.use("/api/profile", profile);
 app.use("/api/signUp", signUp);
-app.use('/api/pizza', pizza);
+app.use('/api/product', product);
+app.use('/api/basket', basket);
 app.use('/api/orders', orders);
 app.use('/api/admin', admin);
 

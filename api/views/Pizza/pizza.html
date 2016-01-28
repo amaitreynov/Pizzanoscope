@@ -51,7 +51,7 @@
                                         <article class="post">
                                             <div class="content orderContent">
                                                 {% for orderPizza in orderCookies.pizzaList %}
-                                                <h4>{{orderPizza.name}} : <a href="/api/pizza/del/{{orderPizza._id}}">Retirer la pizza</a></h4>
+                                                <h4>{{orderPizza.name}} : <a href="/api/basket/del/{{orderPizza._id}}">Retirer la pizza</a></h4>
                                                 <div class="meta-rate" title="user order">
                                                     Prix : {{orderPizza.price}} euros <br/>
                                                     Description : {{orderPizza.description}} <br/>
@@ -70,7 +70,7 @@
                         </aside>
                         <ul class="nav-tab" role="tablist">
                             <li role="presentation"><a href="/api/orders/paypal" role="tab" data-toggle="tab"> Commander ({{ orderCookies.pizzaList.length }}) </a></li>
-                            <li role="presentation"><a href="/api/orders/cleanOrder/{{orderCookies._id}}" role="tab" data-toggle="tab"> Vider </a></li>
+                            <li role="presentation"><a href="/api/basket/cleanBasket/{{orderCookies._id}}" role="tab" data-toggle="tab"> Vider </a></li>
                         </ul>
                     </div>
 
@@ -89,7 +89,7 @@
                                     <p class="entry-position">{{ pizza.Price.Delivered }}</p>
                                     <div class="entry-social">
                                         <div class="entry-social-inner">
-                                            <a href="/api/orders/addPizza/name/{{pizza.Name}}/price/{{pizza.Price.Delivered}}" class="test" class="fa fa-shopping-basket">Ajouter au panier</a>
+                                            <a href="/api/basket/addPizza/name/{{pizza.Name}}/price/{{pizza.Price.Delivered}}" class="test" class="fa fa-shopping-basket">Ajouter au panier</a>
                                         </div>
                                     </div>
                                 </div>

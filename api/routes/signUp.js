@@ -4,8 +4,8 @@ var mongoose = require("mongoose");
 var User = mongoose.model("User");
 var Class = mongoose.model("Class");
 
-router.get('/' , function(req, res) {
-    res.redirect('/api/login');
+router.get(("/"), function (req, res) {
+    res.render('SignUpLogin/signUp', {title: 'SignUpPage'});
 });
 
 router.post('/addUser' , function(req, res)

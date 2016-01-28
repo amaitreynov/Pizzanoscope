@@ -38,7 +38,7 @@ module.exports.createCookie = function(jsonToken, url, req, res) {
     });
 
     if(url == null)
-        res.redirect('/api/pizza/getAll');
+        res.redirect('/api/product/getAll');
     else
         res.redirect(url);
 

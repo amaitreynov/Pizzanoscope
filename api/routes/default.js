@@ -33,10 +33,6 @@ var mongoose = require('mongoose'),
         utils.authenticate(req, res, next);
     });
 
-router.get(("/signUp"), function (req, res) {
-    res.render('SignUpLogin/signUp', {title: 'SignUpPage'});
-});
-
 
     router.unless = require("express-unless");
 

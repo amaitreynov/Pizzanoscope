@@ -42,11 +42,6 @@ module.exports.authenticate = function (req, res, next) {
         user.comparePassword(password, function (err, isMatch) {
             if (isMatch && !err) {
 
-                /*new Cookies(req, res).set('user', JSON.stringify(user), {
-                 httpOnly: true,
-                 secure: false      // for your dev environment => true for prod
-                 });*/
-
                 securityUtil.createCookie(securityUtil.createToken(user), null, req, res, next);
                 res.redirect('/api/product/getAll');
 

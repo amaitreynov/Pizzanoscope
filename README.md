@@ -1,4 +1,4 @@
-# SOA-Nodejs
+# Pizzanoscope
 
 Système de connexion
 	check si user ynov(via mail + confirmation)
@@ -16,36 +16,9 @@ Page interne sécurisée
 		afficher toutes les images de tous les pizzas
 		afficher le nom sous les images
 
-	- (Abandon ?) Chat 
+	- Chat
 		nom d'utilisateur
 		service de chan différents (socket io)
 		afficher des images
-		
-#Liste des tâches
 
-Massil + Steph :
-	- Page de connexion standard + lien d'inscription
-	
-Antoine + Thomas :
-	- Gestion des droits (Token)
-	
-Leon :
-	- Validation du paiement
-		- Infos paimement
-		- Etat commande
-		- Relance paiement / via mail) (V2 = sms)
-
-Nans + Tristan :
-	- Pizzanoscope
-		- Notification sur son compte
-		- Panier
-		
-Bart :
-	- Frontend
-	- Scrapper pizza dominos
-	
-Non attribuée :
-	- BackOffice
-	- Système de notification
-		
 V2 pour le BDE

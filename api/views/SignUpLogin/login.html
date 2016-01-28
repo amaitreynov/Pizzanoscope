@@ -1,0 +1,87 @@
+{% extends "../layout.html" %}
+
+    {% block head %}
+        {% parent %}
+    {% endblock %}
+
+
+    {% block header %}
+        <header id="ht-header" class="">
+            <div id="undefined-sticky-wrapper" class="sticky-wrapper" style="height: 100px;"><div class="ht-main-navbar logo-center sticky-nav scroll-up-nav">
+                <div class="container">
+                    <div class="inner">
+                        <h1 id="ht-logo">
+                            <a href="/api/login">
+                                <img class="logo-top" src="/images/logo.png" alt="">
+                            </a>
+                            Realty
+                        </h1>
+                        <div class="ht-main-nav-wrapper">
+                            <nav id="ht-main-nav">
+                                <ul>
+                                    <li><a href="#"></a></li>
+                                </ul>
+                                <ul>
+                                    <li><a href="#"></a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div></div>
+        </header>
+    {% endblock %}
+
+    {% block heading %}
+        <div class="ht-page-header">
+            <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
+            <div class="container">
+                <div class="inner">
+                    <h2 class="heading">Pizzanoscope</h2>
+                    <ol class="ht-breadcrumb">
+                        <li>Commander vos pizza facilement sur Pizzanoscope !</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block content %}
+        <section class="ht-section hs-recipes grid">
+            <div class="hs-content">
+                <div class="container">
+                    <div class="row">
+                        <div class="login-form col-md-offset-2 col-md-8 ">
+                            <h2>Se Connecter</h2>
+                            <form name="loginform" id="loginform" action="/api/login" method="post">
+
+                                <p class="login-username">
+                                    <label for="login_username">Pseudo</label>
+                                    <input type="text" name="username" id="login_username" class="input" value="" size="20" placeholder="Your Username">
+                                </p>
+                                <p class="login-password">
+                                    <label for="login_password">Mot de passe</label>
+                                    <input type="password" name="password" id="login_password" class="input" value="" size="20" placeholder="Your password">
+                                </p>
+
+                                <!--<p class="login-remember">
+                                    <label>
+                                        <input name="rememberme" type="checkbox" id="rememberme" value="forever"> Remember Me
+                                    </label></p>-->
+                                <p class="login-submit">
+                                    <input type="submit" name="wp-submit" id="wp-submit" class="button-primary" value="Se connecter">
+                                    <a href="/api/signUp" class="signUpLink" >Vous n'êtes pas encore inscrit ? Vous pouvez le faire ici !</a>
+                                </p>
+                            </form>
+                        </div>
+                    </div><!--./row-->
+
+                </div>
+            </div>
+        </section>
+    {% endblock %}
+
+
+    {% block footer %}
+        {% parent %}
+    {% endblock %}

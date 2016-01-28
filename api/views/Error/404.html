@@ -1,0 +1,40 @@
+{% extends "../layout.html" %}
+
+    {% block head %}
+        {% parent %}
+    {% endblock %}
+
+
+    {% block header %}
+        {% parent %}
+    {% endblock %}
+
+    {% block heading %}
+        <div class="ht-page-header">
+            <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
+            <div class="container">
+                <div class="inner">
+                    <h2 class="heading">Pizzanoscope</h2>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block content %}
+        <section class="ht-section hs-404">
+            <div class="container">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2 inner">
+                    <div class="media"><img src="images/404.png" alt=""></div>
+                    <h2>Oops! That page can't be found</h2>
+                    <p>Sorry, but the page you are looking for does not exists.</p>
+                    <a href="#" class="ht-button view-more-button">
+                        <i class="fa fa-arrow-left"></i> BACK TO HOME <i class="fa fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+    {% endblock %}
+
+    {% block footer %}
+        {% parent %}
+    {% endblock %}

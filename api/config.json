@@ -1,0 +1,25 @@
+{
+  "secret":"ilovesaltynode",
+
+  "_comment": "No connection required/ Relative Link",
+  "disconnectedBeginLinks": [
+      "/api/signUp"
+      ],
+
+  "_comment": "No connection required / Strict Link",
+  "disconnectedStrictLinks":[
+      "/",
+      "/api/login",
+      "/api/logout",
+      "/api/users/setup"
+      ],
+
+  "_comment": "Required Connection / Relative Link",
+  "adminRequiredBeginLinks": [
+      "/api/admin"
+      ],
+
+  "_comment": "Required connection / Strict Link",
+  "adminRequiredStrictLinks": [
+      ]
+}

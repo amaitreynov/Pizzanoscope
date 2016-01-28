@@ -1,0 +1,122 @@
+{% extends "../layout.html" %}
+
+    {% block head %}
+        {% parent %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    {% endblock %}
+
+
+    {% block header %}
+        {% parent %}
+    {% endblock %}
+
+    {% block heading %}
+        <div class="ht-page-header">
+            <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
+            <div class="container">
+                <div class="inner">
+                    <h2 class="heading">Administration</h2>
+                    <ol class="ht-breadcrumb">
+                        <li><a href="/api/admin/orders">Liste Commandes</a></li>
+                        <li><a href="/api/admin/users">Liste Utilisateurs</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block content %}
+        <div class="ht-section hs-editors grid">
+            <div class="hs-content">
+                <div class="container">
+                    {% for user in users %}
+                    <div class="ht-form-block ht-form-block-back-user">
+                        <!-- Header utilisateur -->
+                        <div class="row">
+                            <div class="row-member">
+                                <h3 class="entry-name">{{user.firstname}} - {{user.lastname}}
+                                    <button type="button" class="ht-button btn btn-info" data-toggle="collapse" data-target=".user-details-{{user.username}}">Détails</button>
+                                </h3>
+                                <!--TODO Add avatar in a <figure class ="avatar"> -->
+                            </div>
+                        </div>
+
+                        <div class="user-details-{{user.username}} collapse">
+
+                            <form action="/api/admin/users/updUser" method="post">
+                                <div class="row">
+                                    <input name="userId" type="hidden" value="{{user.id}}">
+                                    <div class="form-group col-xs-12 col-sm-4">
+                                        <h3>Info de base</h3>
+                                        <label for="firstname">Prénom : </label>
+                                        <input id="firstname" name="firstname" type="text" value="{{ user.firstname }}" required>
+                                        <label for="lastname">Nom :</label>
+                                        <input id="lastname" name="lastname" type="text" value="{{ user.lastname }}" required>
+                                    </div>
+                                    <div class="form-group col-xs-12 col-sm-6">
+                                        <h3>Info géographique</h3>
+                                        <label for="address">Adresse :</label>
+                                        <input id="address" name="address" type="text" value="{{ user.address }}">
+                                        <label for="phoneNumber">N° de portable :</label>
+                                        <input id="phoneNumber" name="phoneNumber" type="text" value="{{ user.phoneNumber }}" required>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+
+
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12 col-sm-4">
+                                        <h3>Info sur l'utilisateur</h3>
+                                        <label for="username">Pseudo :</label>
+                                        <input id="username" name="username" type="text" value="{{ user.username }}" required>
+                                        <label for="email">Email :</label>
+                                        <input id="email" name="email" type="email" value="{{ user.email }}" required>
+                                    </div>
+                                    <div class="form-group col-xs-12 col-sm-4">
+                                        <h3>Status</h3>
+                                            <div class="is-admin">
+                                                <label for="isAdmin">Is Admin :</label>
+                                                <!--<input id="isAdmin" name="isAdmin" type="text" value="{{ user.admin }}" required>-->
+                                                <select id="isAdmin" name="isAdmin">
+                                                    {% if user.admin == true %}
+                                                    <option value="true" selected>OUI</option>
+                                                    <option value="false">NON</option>
+                                                    {% else %}
+                                                    <option value="true">OUI</option>
+                                                    <option value="false" selected>NON</option>
+                                                    {% endif %}
+                                                </select>
+                                            </div>
+                                        <label for="delUserAdmin">Suppression :</label><br/>
+                                        {% if user.id != currentUser._id %}
+                                            <button id="delUserAdmin" type="submit" class="ht-button view-more-button">
+                                            <a class="delete" title="Delete user" href="/api/admin/users/delete/{{user.id}}">
+                                                <i class="fa fa-arrow-left"></i>Supprimer l'utilisateur<i class="fa fa-arrow-right"></i>
+                                            </a>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group submit-group">
+                                        <button type="submit" class="ht-button view-more-button">
+                                            <i class="fa fa-arrow-left"></i>Mettre à jour le profile<i class="fa fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                            </form>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block footer %}
+        {% parent %}
+    {% endblock %}

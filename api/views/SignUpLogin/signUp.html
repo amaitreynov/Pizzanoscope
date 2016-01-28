@@ -1,0 +1,113 @@
+{% extends "../layout.html" %}
+
+    {% block head %}
+        {% parent %}
+    {% endblock %}
+
+
+    {% block header %}
+        <header id="ht-header" class="">
+            <div id="undefined-sticky-wrapper" class="sticky-wrapper" style="height: 100px;"><div class="ht-main-navbar logo-center sticky-nav scroll-up-nav">
+                <div class="container">
+                    <div class="inner">
+                        <h1 id="ht-logo">
+                            <a href="/api/login">
+                                <img class="logo-top" src="/images/logo.png" alt="">
+                            </a>
+                            Realty
+                        </h1>
+                        <div class="ht-main-nav-wrapper">
+                            <nav id="ht-main-nav">
+                                <ul>
+                                    <li><a href="#"></a></li>
+                                </ul>
+                                <ul>
+                                    <li><a href="#"></a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div></div>
+        </header>
+    {% endblock %}
+
+    {% block heading %}
+        <div class="ht-page-header">
+            <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
+            <div class="container">
+                <div class="inner">
+                    <h2 class="heading">Pizzanoscope</h2>
+                    <ol class="ht-breadcrumb">
+                        <li>Commander vos pizza facilement sur Pizzanoscope !</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block content %}
+        <section class="ht-section hs-recipes grid">
+            <div class="hs-content">
+                <div class="container">
+                    <div class="row">
+                        <div class="register-form col-md-offset-2 col-md-8 ">
+                            <div class="title">
+                                <h2>S'inscrire</h2>
+                                <p class="register_warning has-error"><p class="signUpRappel"> {{registerErr}}</p></p>
+
+                            </div>
+                            <form action="/api/signUp/addUser" method="post">
+                                <p>
+                                    <label>*Nom :</label><br/>
+                                    <input type="text" name="lastname" class="input" value="{{lastname}}" required><br/>
+                                </p>
+                                <p>
+                                    <label>*Prénom :</label><br/>
+                                    <input type="text" name="firstname" class="input" value="{{firstname}}" required><br/>
+                                </p>
+                                <p>
+                                    <label>*Pseudo :</label><br/>
+                                    <input type="text" name="username" value="{{username}}" required><br/>
+                                </p>
+                                <p>
+                                    <label>*Mot de passe :</label><br/>
+                                    <input type="password" name="pass" required><br/>
+                                </p>
+                                <p>
+                                    <label>*Confirmation mot de passe :</label><br/>
+                                    <input type="password" name="checkpass" required><br/>
+                                </p>
+                                <p>
+                                    <label>*Email :</label><br/>
+                                    <input type="email" name="mail" value="{{email}}" required><br/>
+                                </p>
+                                <p>
+                                    <label>*Confirmation email :</label><br/>
+                                    <input type="email" name="checkmail" value="{{checkMail}}" required><br/>
+                                </p>
+                                <p>
+                                    <label>Adresse :</label><br/>
+                                    <input type="text" name="address" value="{{address}}"><br/>
+                                </p>
+                                <p>
+                                    <label>*N° de portable :</label><br/>
+                                    <input type="text" name="phone" value="{{phoneNumber}}" required><br/>
+                                </p>
+
+
+                                <p>
+                                    <input type="submit" value="S'inscrire" id="register" class="button-primary">
+                                    <a href="/api/login"><button type="button" class="button-primary">Retour</button></a>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endblock %}
+
+    {% block footer %}
+        {% parent %}
+    {% endblock %}

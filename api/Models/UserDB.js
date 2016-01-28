@@ -20,7 +20,7 @@ var User = new Schema({
     address: { type: String },
     phoneNumber: { type: String, required: true},
     admin: { type: Boolean, required: true },
-    class: { type: Schema.ObjectId, ref: 'Class', required: true },
+    class: { type: String, required: true },
     created_at: { type: Date, required: true, default: Date.now },
     updated_at: { type: Date, required: true, default: Date.now }
 });

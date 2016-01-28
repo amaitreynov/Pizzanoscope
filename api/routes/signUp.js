@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require("mongoose");
 var User = mongoose.model("User"),
+    _ = require('lodash'),
     logger = require('log4js').getLogger('controller.signup');
 var Class = mongoose.model("Class");
 
@@ -9,26 +10,18 @@ router.get(("/"), function (req, res) {
     res.render('SignUp/signUp', {title: 'SignUpPage'});
 });
 
-router.post('/addUser' , function(req, res)
-{
+router.post('/addUser', function (req, res) {
     var registerErr = null;
     var m_mail = req.body.mail.toString();
 
-    if(req.body.checkmail == m_mail)
-    {
-        if(req.body.checkpass == req.body.pass) {
+    if (req.body.checkmail == m_mail) {
+        if (req.body.checkpass == req.body.pass) {
             if (m_mail.indexOf("@ynov.com") > -1) {
                 User.find({
                     email: m_mail,
                     username: req.body.username
                 }).exec(function (err, result) {
-                    if (result == "") {
-                        var class1 = new Class({
-                            name: 'Bidon',
-                            school: 'Bidon',
-                            created_on: Date.now(),
-                            updated_at: Date.now()
-                        });
+                    if (_.isEmpty(result) || _.isNull(result)) {
                         var user = new User(
                             {
                                 firstname: req.body.firstname,
@@ -40,77 +33,83 @@ router.post('/addUser' , function(req, res)
                                 address: req.body.address,
                                 phoneNumber: req.body.phone,
                                 admin: false,
-                                class: class1,
+                                class: req.body.class,
                                 created_on: Date.now(),
-                                updated_at: Date.now(),
-                            }
-                        );
+                                updated_at: Date.now()
+                            });
                         user.save(function (err) {
                             if (err)
                                 logger.error(err);
-                            else
-                            {
+                            else {
                                 logger.error('User saved successfully');
-                                res.render('SignUpLogin/signUpSuccess', {registerSuccess: "Merci, vous êtes bien inscrit !", username: req.body.username, pass: req.body.pass });
+                                res.render('SignUp/signUpSuccess', {
+                                    registerSuccess: "Merci, vous êtes bien inscrit !",
+                                    email: m_mail,
+                                    pass: req.body.pass
+                                });
                             }
                         });
                     }
-                    else
-                    {
+                    else {
                         registerErr = "L'utilisateur existe déjà !";
                         logger.error(registerErr);
-                        res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
-                                                                        lastname: req.body.lastname,
-                                                                        username: req.body.username,
-                                                                        email: m_mail,
-                                                                        checkMail : req.body.checkmail,
-                                                                        password: req.body.pass,
-                                                                        address: req.body.address,
-                                                                        phoneNumber: req.body.phone});
+                        res.render('SignUp/signUp', {
+                            registerErr: registerErr, firstname: req.body.firstname,
+                            lastname: req.body.lastname,
+                            username: req.body.username,
+                            email: m_mail,
+                            checkMail: req.body.checkmail,
+                            password: req.body.pass,
+                            address: req.body.address,
+                            phoneNumber: req.body.phone
+                        });
 
                     }
                 });
             }
-            else
-            {
+            else {
                 registerErr = "Votre adresse mail n'est pas une adresse Ynov !";
                 logger.error(registerErr);
-                res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
-                                                                lastname: req.body.lastname,
-                                                                username: req.body.username,
-                                                                email: m_mail,
-                                                                checkMail : req.body.checkmail,
-                                                                password: req.body.pass,
-                                                                address: req.body.address,
-                                                                phoneNumber: req.body.phone});
+                res.render('SignUp/signUp', {
+                    registerErr: registerErr, firstname: req.body.firstname,
+                    lastname: req.body.lastname,
+                    username: req.body.username,
+                    email: m_mail,
+                    checkMail: req.body.checkmail,
+                    password: req.body.pass,
+                    address: req.body.address,
+                    phoneNumber: req.body.phone
+                });
             }
         }
-        else
-        {
+        else {
             registerErr = "Les deux mots de passe ne sont pas identiques !";
             logger.error(registerErr);
-            res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
-                                                            lastname: req.body.lastname,
-                                                            username: req.body.username,
-                                                            email: m_mail,
-                                                            checkMail : req.body.checkmail,
-                                                            password: req.body.pass,
-                                                            address: req.body.address,
-                                                            phoneNumber: req.body.phone});
+            res.render('SignUp/signUp', {
+                registerErr: registerErr, firstname: req.body.firstname,
+                lastname: req.body.lastname,
+                username: req.body.username,
+                email: m_mail,
+                checkMail: req.body.checkmail,
+                password: req.body.pass,
+                address: req.body.address,
+                phoneNumber: req.body.phone
+            });
         }
     }
-    else
-    {
-        registerErr = "Les deux adresses mails ne sont pas identiques !";
+    else {
+        registerErr = "Les deux adresses mail ne sont pas identiques !";
         logger.error(registerErr);
-        res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
-                                                        lastname: req.body.lastname,
-                                                        username: req.body.username,
-                                                        email: m_mail,
-                                                        checkMail : req.body.checkmail,
-                                                        password: req.body.pass,
-                                                        address: req.body.address,
-                                                        phoneNumber: req.body.phone});
+        res.render('SignUp/signUp', {
+            registerErr: registerErr, firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            username: req.body.username,
+            email: m_mail,
+            checkMail: req.body.checkmail,
+            password: req.body.pass,
+            address: req.body.address,
+            phoneNumber: req.body.phone
+        });
     }
 
 });

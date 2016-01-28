@@ -47,8 +47,8 @@ router.get('/delete/:value', function(req, res){
 });
 
 router.post('/updUser', function(req, res, next) {
-    User.
-         update(
+    User
+        .update(
         {_id: req.body.userId},
         {$set: {
             firstname: req.body.firstname,

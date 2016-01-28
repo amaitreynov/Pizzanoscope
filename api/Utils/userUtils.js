@@ -42,7 +42,7 @@ module.exports.authenticate = function (req, res, next) {
         user.comparePassword(password, function (err, isMatch) {
             if (isMatch && !err) {
 
-                securityUtil.createCookie(securityUtil.createToken(user), null, req, res, next);
+                securityUtil.createCookie(securityUtil.createToken(user), req, res, next);
                 res.redirect('/api/product/getAll');
 
             } else {

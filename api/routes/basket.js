@@ -113,7 +113,7 @@ router.get('/addPizza/name/:value1/price/:value2', function(req, res) {
 
         orderToInsert.save();
         Order.findOne({_id: orderToInsert._id}).populate("user").exec(function(err) {
-            if(err) logger.error(err.message); else logger.info('Populate User;');
+            if(err) logger.error(err.message); else logger.info('Populate Profile;');
         });
         Order.findOne({_id: orderToInsert._id}).populate("pizzaList").exec(function(err) {
             if(err) logger.error(err.message); else logger.info('Populate Pizza');

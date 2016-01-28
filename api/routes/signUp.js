@@ -50,7 +50,7 @@ router.post('/addUser' , function(req, res)
                                 logger.error(err);
                             else
                             {
-                                logger.error('User saved successfully');
+                                logger.error('Profile saved successfully');
                                 res.render('SignUpLogin/signUpSuccess', {registerSuccess: "Merci, vous êtes bien inscrit !", username: req.body.username, pass: req.body.pass });
                             }
                         });

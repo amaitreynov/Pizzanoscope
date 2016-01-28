@@ -61,7 +61,7 @@ router.post('/users/updUser', function(req, res, next) {
             else
             {
                 res.redirect('/api/admin/users');
-                /*User.findOne({_id: req.body.userId}, function(err,user) {
+                /*Profile.findOne({_id: req.body.userId}, function(err,user) {
                     utils.createCookie(utils.createToken(user), '/api/users/Profile/Le profile a été mis à jour !', req, res);
                 });*/
             }

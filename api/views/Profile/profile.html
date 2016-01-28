@@ -16,7 +16,7 @@
                 <div class="inner">
                     <h2 class="heading">Profile Utilisateurs</h2>
                     <ol class="ht-breadcrumb">
-                        <li><a href="/api/users/profile">Profile</a></li>
+                        <li><a href="/api/profile/">Profile</a></li>
                         <li><a href="#">Dernières Commandes</a></li>
                     </ol>
                 </div>
@@ -37,7 +37,7 @@
                                     <p class="register_warning has-error"><p class="signUpRappel"> {{profileUpdated}}</p></p>
 
                                 </div>
-                                <form action="/api/users/updUser" method="post">
+                                <form action="/api/profile/updateProfile" method="post">
                                     <div class="row">
                                         <input id="userId" name="userId" type="hidden" value="{{ user._id}}">
                                         <div class="form-group col-xs-12 col-sm-4">

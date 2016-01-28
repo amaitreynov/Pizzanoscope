@@ -24,7 +24,7 @@ var debug = require('debug')('app:utils:' + process.pid),
 module.exports.createToken = function createToken (user) {
 
     if (_.isEmpty(user)) {
-        return next(new Error('User data cannot be empty.'));
+        return next(new Error('Profile data cannot be empty.'));
     }
 
     var token = jwt.sign(user, config.secret);

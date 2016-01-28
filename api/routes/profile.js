@@ -7,46 +7,27 @@ var express = require('express'),
     _ = require('lodash'),
     logger = require('log4js').getLogger('controller.profile'),
     Cookies = require("cookies");
-var utils = require("../Utils/securityUtils.js");
+var securityUtil = require("../Utils/securityUtils.js");
 var config = require('../config.json');
 var jwt = require('jsonwebtoken');
 var router = express.Router();
-
-/* GET users listing. */
-router.get('/', function(req, res) {
-  User.
-      find().
-      exec(function(err, users){
-        res.json(users);
-      });
-});
 
 // TODO: Check why it throw an error (500)
 router.get('/', function(req, res) {
     var token = new Cookies(req, res).get('access_token');
     var user = jwt.decode(token, config.secret);
-    res.render('User/profile', { user : user });
+    logger.debug(user._doc);
+    res.render('Profile/profile', { user : user._doc });
 });
 
-router.get('/Profile/:value', function(req, res) {
+router.get('/:value', function(req, res) {
     var token = new Cookies(req, res).get('access_token');
     var user = jwt.decode(token, config.secret);
-    res.render('User/profile', { user : user ,profileUpdated : req.params.value});
+    res.render('Profile/profile', { user : user._doc ,profileUpdated : req.params.value});
 });
 
-/* DELETE user */
-router.get('/delete/:value', function(req, res){
-    utils.middleware(true, req, res, function() {
-        logger.info(req.params.value);
-        User.
-            remove({_id: req.params.value}).
-            exec(function(err, user){
-                res.json(user);
-            });
-    });
-});
 
-router.post('/updUser', function(req, res, next) {
+router.post('/updateProfile', function(req, res, next) {
     User.
          update(
         {_id: req.body.userId},
@@ -66,7 +47,10 @@ router.post('/updUser', function(req, res, next) {
             {
 
                 User.findOne({_id: req.body.userId}, function(err,user) {
-                    utils.createCookie(utils.createToken(user), '/api/users/Profile/Le profile a été mis à jour !', req, res);
+                    securityUtil.createCookie(securityUtil.createToken(user), req, res, next);
+                    //res.redirect('/api/profile/Le mot de passe a été mis à jour !');
+                    res.render('Profile/profile', { user : user ,profileUpdated : 'Le mot de passe a été mis à jour !'});
+
                 });
             }
 
@@ -108,7 +92,8 @@ router.post('/updUserPass', function(req, res, next) {
                                 User.findOne({_id: req.body.userIdPass}, function(err,user) {
                                     if(err) logger.error(err.message);
 
-                                    utils.createCookie(utils.createToken(user), '/api/users/Profile/Le mot de passe a été mis à jour !', req, res);
+                                    utils.createCookie(utils.createToken(user), req, res, next);
+                                    res.redirect('/api/Profile/updateProfile/Le mot de passe a été mis à jour !');
                                 });
                             });
                     }
@@ -150,7 +135,7 @@ router.get('/setup', function(req, res) {
     }).save(function(err) {
             if (err) logger.info(err);
 
-            logger.info('User saved successfully');
+            logger.info('Profile saved successfully');
             res.json({ success: true });
         });
 });

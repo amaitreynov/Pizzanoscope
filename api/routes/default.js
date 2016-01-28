@@ -7,7 +7,7 @@ var express = require('express');
 var router = express.Router();
 
 var mongoose = require('mongoose'),
-    utils = require("../Utils/utils.js"),
+    userUtil = require("../Utils/userUtils.js"),
     debug = require('debug')('app:routes:default' + process.pid),
     _ = require("lodash"),
     path = require('path'),
@@ -30,7 +30,7 @@ var mongoose = require('mongoose'),
     });
 
     router.post(("/login"), function (req, res, next) {
-        utils.authenticate(req, res, next);
+        userUtil.authenticate(req, res, next);
     });
 
 

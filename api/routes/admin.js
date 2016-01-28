@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
     Pizza = mongoose.model('Pizza'),
     Order = mongoose.model('Order');
 var Cookies = require("cookies");
-var utils = require("../Utils/utils.js");
+var utils = require("../Utils/securityUtils.js");
 var config = require('../config.json');
 var jwt = require('jsonwebtoken');
 

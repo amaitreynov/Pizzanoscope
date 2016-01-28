@@ -5,6 +5,7 @@ var router = express.Router();
 var paypal = require('paypal-rest-sdk');
 var Cookies = require("cookies");
 var UtilsOrder = require('../Utils/orderUtils');
+var logger = require('log4js').getLogger('controller.product');
 var utils = require("../Utils/securityUtils.js");
 var config = require('../config.json');
 var jwt = require('jsonwebtoken');
@@ -29,7 +30,7 @@ router.get('/getAll', function (req, res) {
                 body += resx;
             });
             data.on('end', function () {
-                console.log('ending http request');
+                logger.info('ending http request');
                 var bodyParsed = JSON.parse(body);
                 var pizzas = bodyParsed.MenuPages[1].SubMenus;
                 var token = new Cookies(req, res).get('access_token');
@@ -44,7 +45,7 @@ router.get('/getAll', function (req, res) {
         getData.end();
 
         getData.on('error', function (e) {
-            console.error("Error: " + e);
+            logger.error("Error: " + e);
         });
 });
 

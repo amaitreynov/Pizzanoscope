@@ -13,11 +13,12 @@ var debug = require('debug')('app:utils:' + process.pid),
     User = mongoose.model('User'),
     securityUtil = require('./securityUtils'),
     UnauthorizedAccessError = require('../errors/UnauthorizedAccessError.js'),
+    logger = require('log4js').getLogger('utils.user'),
     NotFoundError = require('../errors/NotFoundError.js');
 
 module.exports.authenticate = function (req, res, next) {
 
-    console.log("Processing authenticate middleware");
+    logger.info("Processing authenticate middleware");
 
     var username = req.body.username,
         password = req.body.password;
@@ -32,7 +33,7 @@ module.exports.authenticate = function (req, res, next) {
         username: username
     }, function (err, user) {
         if (err || !user) {
-            console.log(err);
+            logger.error(err);
             return next(new UnauthorizedAccessError("401", {
                 message: 'Invalid username or password'
             }));

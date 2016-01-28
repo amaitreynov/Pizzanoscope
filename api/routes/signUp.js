@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require("mongoose");
-var User = mongoose.model("User");
+var User = mongoose.model("User"),
+    logger = require('log4js').getLogger('controller.signup');
 var Class = mongoose.model("Class");
 
 router.get(("/"), function (req, res) {
@@ -46,10 +47,10 @@ router.post('/addUser' , function(req, res)
                         );
                         user.save(function (err) {
                             if (err)
-                                console.log(err);
+                                logger.error(err);
                             else
                             {
-                                console.log('User saved successfully');
+                                logger.error('User saved successfully');
                                 res.render('SignUpLogin/signUpSuccess', {registerSuccess: "Merci, vous êtes bien inscrit !", username: req.body.username, pass: req.body.pass });
                             }
                         });
@@ -57,7 +58,7 @@ router.post('/addUser' , function(req, res)
                     else
                     {
                         registerErr = "L'utilisateur existe déjà !";
-                        console.log(registerErr);
+                        logger.error(registerErr);
                         res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
                                                                         lastname: req.body.lastname,
                                                                         username: req.body.username,
@@ -73,7 +74,7 @@ router.post('/addUser' , function(req, res)
             else
             {
                 registerErr = "Votre adresse mail n'est pas une adresse Ynov !";
-                console.log(registerErr);
+                logger.error(registerErr);
                 res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
                                                                 lastname: req.body.lastname,
                                                                 username: req.body.username,
@@ -87,7 +88,7 @@ router.post('/addUser' , function(req, res)
         else
         {
             registerErr = "Les deux mots de passe ne sont pas identiques !";
-            console.log(registerErr);
+            logger.error(registerErr);
             res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
                                                             lastname: req.body.lastname,
                                                             username: req.body.username,
@@ -101,7 +102,7 @@ router.post('/addUser' , function(req, res)
     else
     {
         registerErr = "Les deux adresses mails ne sont pas identiques !";
-        console.log(registerErr);
+        logger.error(registerErr);
         res.render('SignUpLogin/signUp', {registerErr: registerErr, firstname: req.body.firstname,
                                                         lastname: req.body.lastname,
                                                         username: req.body.username,

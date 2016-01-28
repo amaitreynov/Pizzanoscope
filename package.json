@@ -17,6 +17,8 @@
     "express-unless": "^0.3.0",
     "jsonwebtoken": "^5.4.1",
     "lodash": "^3.10.1",
+    "log4js": "^0.6.30",
+    "mkdirp": "^0.5.1",
     "mongoose": "^4.2.5",
     "morgan": "~1.6.1",
     "njwt": "^0.2.3",

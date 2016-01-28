@@ -3,6 +3,7 @@
  */
 var path = require("path"),
     config = require("./../config.json"),
+    logger = require('log4js').getLogger('utils.create_user'),
     User = require(path.join(__dirname, "models", "user.js")),
     mongoose_uri = process.env.MONGOOSE_URI || "localhost/express-jwt-auth";
 
@@ -12,24 +13,24 @@ var username = args[0];
 var password = args[1];
 
 if (args.length < 2) {
-    console.log("usage: node %s %s %s", path.basename(process.argv[1]), "user", "password");
+    logger.info("usage: node %s %s %s", path.basename(process.argv[1]), "user", "password");
     process.exit();
 }
 
-console.log("Username: %s", username);
-console.log("Password: %s", password);
+logger.info("Username: %s", username);
+logger.info("Password: %s", password);
 
-console.log("Creating a new user in Mongo");
+logger.info("Creating a new user in Mongo");
 
 
 var mongoose = require('mongoose');
 mongoose.set('debug', true);
 mongoose.connect(mongoose_uri);
 mongoose.connection.on('error', function () {
-    console.log('Mongoose connection error', arguments);
+    logger.info('Mongoose connection error', arguments);
 });
 mongoose.connection.once('open', function callback() {
-    console.log("Mongoose connected to the database");
+    logger.info("Mongoose connected to the database");
 
     var user = new User();
 
@@ -38,9 +39,9 @@ mongoose.connection.once('open', function callback() {
 
     user.save(function (err) {
         if (err) {
-            console.log(err);
+            logger.error(err);
         } else {
-            console.log(user);
+            logger.info(user);
         }
         process.exit();
     });

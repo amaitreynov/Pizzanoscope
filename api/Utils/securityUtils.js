@@ -8,6 +8,7 @@ var debug = require('debug')('app:utils:' + process.pid),
     uuid = require('uuid'),
     nJwt = require('nJwt'),
     jwt = require('jsonwebtoken'),
+    logger = require('log4js').getLogger('utils.security'),
     secretKey = uuid.v4(),
     config = require('../config.json'),
     _ = require("lodash"),
@@ -45,7 +46,7 @@ module.exports.createCookie = function(jsonToken, url, req, res) {
 };
 
 module.exports.verify = function (req, res, next) {
-    console.log("Verifying token");
+    logger.info("Verifying token");
     var token = exports.fetch(req, res);
     nJwt.verify(token, secretKey, function (err, token) {
         if (err) {
@@ -53,7 +54,7 @@ module.exports.verify = function (req, res, next) {
             return next(new UnauthorizedAccessError("invalid_token"));
         } else {
             req.user = data;
-            console.log("Token has been validated");
+            logger.info("Token has been validated");
             next();
         }
     });
@@ -92,4 +93,4 @@ module.exports.isAdminRequiredLink = function(link){
 module.exports.TOKEN_EXPIRATION = TOKEN_EXPIRATION;
 module.exports.TOKEN_EXPIRATION_SEC = TOKEN_EXPIRATION_SEC;
 
-console.log("-- Security Utils loaded --");
+logger.info("-- Security Utils loaded --");

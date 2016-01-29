@@ -3,7 +3,8 @@ var router = express.Router();
 var mongoose = require("mongoose");
 var User = mongoose.model("User"),
     _ = require('lodash'),
-    logger = require('log4js').getLogger('controller.signup');
+    logger = require('log4js').getLogger('controller.signup'),
+    emailUtils = require('../Utils/emailUtils');
 var Class = mongoose.model("Class");
 
 router.get(("/"), function (req, res) {
@@ -37,15 +38,36 @@ router.post('/addUser', function (req, res) {
                                 created_on: Date.now(),
                                 updated_at: Date.now()
                             });
-                        user.save(function (err) {
+                        user.save(function (err,user) {
                             if (err)
                                 logger.error(err);
                             else {
-                                logger.error('User saved successfully');
-                                res.render('SignUp/signUpSuccess', {
-                                    registerSuccess: "Merci, vous êtes bien inscrit !",
-                                    email: m_mail,
-                                    pass: req.body.pass
+                                logger.info('User saved successfully:'+user);
+                                //send email
+                                emailUtils.dispatchAccountValidationLinkTest(user,function(err,user){
+                                    if(!err ){
+                                        res.render('SignUp/signUpSuccess', {
+                                            registerSuccess: "Merci, vous êtes bien inscrit !\n" +
+                                            "Un email contenant un lien de confirmation de votre adresse mail\n" +
+                                            "vous a été envoyé à l'adresse mail "+ user.email+"\n Please verify your email :)",
+                                            email: m_mail,
+                                            pass: req.body.pass
+                                        });
+                                    }
+                                    else {
+                                        logger.error('Error sending mail:'+JSON.stringify(err));
+                                        res.render('SignUp/signUp', {
+                                            registerErr: JSON.stringify(err),
+                                            firstname: req.body.firstname,
+                                            lastname: req.body.lastname,
+                                            username: req.body.username,
+                                            email: m_mail,
+                                            checkMail: req.body.checkmail,
+                                            password: req.body.pass,
+                                            address: req.body.address,
+                                            phoneNumber: req.body.phone
+                                        });
+                                    }
                                 });
                             }
                         });

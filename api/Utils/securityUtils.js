@@ -42,20 +42,20 @@ module.exports.createCookie = function(jsonToken, req, res, next) {
 
 };
 
-module.exports.verify = function (req, res, next) {
-    logger.info("Verifying token");
-    var token = exports.fetch(req, res);
-    nJwt.verify(token, secretKey, function (err, token) {
-        if (err) {
-            req.user = undefined;
-            return next(new UnauthorizedAccessError("invalid_token"));
-        } else {
-            req.user = data;
-            logger.info("Token has been validated");
-            next();
-        }
-    });
-};
+//module.exports.verify = function (req, res, next) {
+//    logger.info("Verifying token");
+//    var token = exports.fetch(req, res);
+//    nJwt.verify(token, secretKey, function (err, token) {
+//        if (err) {
+//            req.user = undefined;
+//            return next(new UnauthorizedAccessError("invalid_token"));
+//        } else {
+//            req.user = data;
+//            logger.info("Token has been validated");
+//            next();
+//        }
+//    });
+//};
 
 module.exports.isDisconnectedLink = function(link){
     var dbl, dsl;

@@ -1,135 +1,80 @@
 /**
- * Created by Antoine on 29/01/2016.
+ * Created by Antoine on 04/02/2016.
  */
 var config = require('./config'),
     mongoose = require("mongoose"),
-    logger = require('log4js').getLogger('controller.utils.email'),
+    logger = require('log4js').getLogger('controller.utils.sendEmail'),
     ES = config.smtp,
-    xoauth2 = require("xoauth2"),
-    TokenDB = require('../Models/TokenDB'),
-    Token = mongoose.model('Token'),
-    nodemailer = require('nodemailer'),
+    Mailgun = require('mailgun-js'),
+    securityUtils = require('./securityUtils'),
     EM = {};
 module.exports = EM;
 
-EM.dispatchResetPasswordLink = function (user, callback) {
-    var transporter = EM.createTransporter();
+EM.dispatchAccountValidationLink = function (user, callback) {
 
-    // setup e-mail data with unicode symbols
-    var mailOptions = {
-        from: ES.sender, // sender address
-        to: user.email, // list of receivers
-        subject: 'Password Reset', // Subject line
-        text: 'something went wrong... :(', // plaintext body
-        html: EM.composeEmailResetPassword(user) // html body
-    };
-
-    // send mail with defined transport object
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            return callback(error);
-        }
-        logger.info('Message sent: ' + info.response);
-        callback(null, user);
-
+    //We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
+    var mailgun = new Mailgun({
+        apiKey: 'key-7d3e1a0c62fc2084098e00ff32f0c06d',
+        domain: 'sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org'
     });
-};
-
-EM.dispatchAccountValidationLinkTest = function (user, callback) {
-
-    var transporter = EM.createTransporter();
-
-    logger.debug('Transporter:'+ JSON.stringify(transporter));
+    logger.debug('Transporter:' + JSON.stringify(mailgun));
 
     // send mail
-    //TODO create dynamically
-    transporter.sendMail({
+    var data = {
+        //Specify email data
         from: 'labodevtest@gmail.com',
-        to: 'antoine.maitre@ynov.com',
-        subject: 'hello world!',
-        text: 'Authenticated with OAuth2'
-    }, function (error, response) {
-        if (error) {
-            logger.error('Transporter sending mail failed:' + JSON.stringify(error));
-        } else {
-            logger.debug('Message sent' + JSON.stringify(response));
-            callback(null, user);
-        }
-    });
-
-    transporter.close();
-};
-
-EM.dispatchAccountValidationLink = function (user, callback) {
-    var transporter = EM.createTransporter(user);
-    // setup e-mail data with unicode symbols
-    var mailOptions = {
-        from: ES.sender, // sender address
-        to: user.email, // list of receivers
-        subject: 'Email validation', // Subject line
-        text: 'To verify your email, click on the link below: ', // plaintext body
+        //The email to contact
+        to: user.email,
+        //Subject and text data
+        subject: 'Hello from Mailgun',
         html: EM.composeEmailAccountValidation(user) // html body
     };
-    // send mail with defined transport object
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            return callback(error);
+
+    //Invokes the method to send emails given the above data with the helper library
+    mailgun.messages().send(data, function (err, body) {
+        //If there is an error, render the error page
+        if (err) {
+            //res.render('error', { error : err});
+            logger.error("got an error: ", err);
+            return callback(err);
         }
-        logger.info('Message sent: ' + info.response);
-        callback(null, user);
+        //Else we can greet    and leave
+        else {
+            logger.debug('Message sent' + JSON.stringify(body)+' to mail:'+user.email);
+            callback(null, user.email);
+        }
     });
+};
+
+EM.dispatchResetPasswordLink = function (user, callback) {
+   //todo to implement
 };
 
 EM.composeEmailAccountValidation = function (o) {
-    //TODO add create token
-    var link = 'http://localhost:3000/verify/' + o.email;
+    var link = 'http://localhost:3000/validate?'+ o.email;
+    logger.debug('Link created:'+link);
     var html = "<html><body>";
     html += "Hi " + o.firstname + ",<br><br>";
-    html += "Your username is :: <b>" + o.username + "</b><br><br>";
+    html += "Your username is : <b>" + o.username + "</b><br><br>";
     html += "<a href='" + link + "'>Please click here to validate your account</a><br><br>";
+    html += "If you can't click the link, copy/pasterino this in your browser : <b>" + link + "</b><br><br>";
     html += "Cheers,<br>";
     html += "<a href='http://twitter.com/braitsch'>braitsch</a><br><br>";
     html += "</body></html>";
+    logger.debug('html created:'+html);
     return html;
 };
 
 EM.composeEmailResetPassword = function (o) {
     var link = 'http://localhost:3000/reset-password?e=' + o.email + '&p=' + o.pass;
+    logger.debug('Link created:'+link);
     var html = "<html><body>";
     html += "Hi " + o.firstname + ",<br><br>";
-    html += "Your username is :: <b>" + o.username + "</b><br><br>";
+    html += "Your username is : <b>" + o.username + "</b><br><br>";
     html += "<a href='" + link + "'>Please click here to reset your password</a><br><br>";
     html += "Cheers,<br>";
     html += "<a href='http://twitter.com/braitsch'>braitsch</a><br><br>";
     html += "</body></html>";
+    logger.debug('html created:'+html);
     return html;
-};
-
-//EM.generator = function(user) {
-//    var xoauth2gen = xoauth2.createXOAuth2Generator({
-//        user: user.email,
-//        clientId: "{Client ID}",
-//        clientSecret: "{Client Secret}",
-//        refreshToken: "{User Refresh Token}",
-//        customHeaders: {
-//            "HeaderName": "HeaderValue"
-//        },
-//        customPayload: {
-//            "payloadParamName": "payloadValue"
-//        }
-//    });
-//    return xoauth2gen;
-//};
-
-EM.createTransporter = function(){
-    // create reusable transporter object using the default SMTP transport
-    var transporter = nodemailer.createTransport(({
-        service: 'gmail',
-        auth: {
-            user: 'labodevtest@gmail.com',
-            pass: 'LaboDev69'
-        }
-    }));
-
-    return transporter;
 };

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "../layout.html" %}
+
+        {% block head %}
+        {% parent %}
+        {% endblock %}
+
+
+        {% block header %}
+        <header id="ht-header" class="">
+            <div id="undefined-sticky-wrapper" class="sticky-wrapper" style="height: 100px;"><div class="ht-main-navbar logo-center sticky-nav scroll-up-nav">
+                <div class="container">
+                    <div class="inner">
+                        <h1 id="ht-logo">
+                            <a href="/api/login">
+                                <img class="logo-top" src="/images/logo.png" alt="">
+                            </a>
+                            Realty
+                        </h1>
+                        <div class="ht-main-nav-wrapper">
+                            <nav id="ht-main-nav">
+                                <ul>
+                                    <li><a href="#"></a></li>
+                                </ul>
+                                <ul>
+                                    <li><a href="#"></a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div></div>
+        </header>
+        {% endblock %}
+
+        {% block heading %}
+        <div class="ht-page-header">
+            <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
+            <div class="container">
+                <div class="inner">
+                    <h2 class="heading">Pizzanoscope</h2>
+                    <ol class="ht-breadcrumb">
+                        <li>Commandez vos pizzas facilement sur Pizzanoscope !</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block content %}
+        <section class="ht-section hs-recipes grid">
+            <div class="hs-content">
+                <div class="container">
+                    <div class="row">
+                        <div class="register-form col-md-offset-2 col-md-8 ">
+                            <div class="title">
+                                <h2>S'inscrire</h2>
+                                <p class="register_warning"></p>
+                                <p class="register_warning has-success signUpRappel">{{registerErr}}</p>
+
+                                <a href="/api/login"><button type="button" class="button-primary">Retour à la page de connexion</button></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endblock %}
+
+        {% block footer %}
+        {% parent %}
+        {% endblock %}</title>
+</head>
+<body>
+
+</body>
+</html>

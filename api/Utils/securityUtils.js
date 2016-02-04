@@ -15,14 +15,17 @@ var debug = require('debug')('app:utils:' + process.pid),
     mongoose = require('mongoose'),
     User = require('../models/UserDB'),
     User = mongoose.model('User'),
-
+    url = require('url'),
     TOKEN_EXPIRATION = 60 * 60,
     TOKEN_EXPIRATION_SEC = TOKEN_EXPIRATION * 60,
     UnauthorizedAccessError = require('../errors/UnauthorizedAccessError.js'),
     NotFoundError = require('../errors/NotFoundError.js');
 
-module.exports.createToken = function createToken (user) {
+module.exports.getPathParams = function getPathParams(req) {
+    return url.parse(req.url).pathname.split('/').slice(1);
+};
 
+module.exports.createToken = function createToken(user) {
     if (_.isEmpty(user)) {
         return next(new Error('User data cannot be empty.'));
     }
@@ -31,15 +34,13 @@ module.exports.createToken = function createToken (user) {
     return token;
 };
 
-module.exports.createCookie = function(jsonToken, req, res, next) {
-
+module.exports.createCookie = function (jsonToken, req, res, next) {
     new Cookies(req, res).set('access_token', jsonToken, {
         httpOnly: true,
         secure: false
     });
 
     return next();
-
 };
 
 //module.exports.verify = function (req, res, next) {
@@ -57,31 +58,31 @@ module.exports.createCookie = function(jsonToken, req, res, next) {
 //    });
 //};
 
-module.exports.isDisconnectedLink = function(link){
+module.exports.isDisconnectedLink = function (link) {
     var dbl, dsl;
-    for(var i =0; i < config.disconnectedBeginLinks.length; i++){
+    for (var i = 0; i < config.disconnectedBeginLinks.length; i++) {
         dbl = config.disconnectedBeginLinks[i];
-        if(link.indexOf(dbl) == 0)
+        if (link.indexOf(dbl) == 0)
             return true;
     }
-    for(var i =0; i < config.disconnectedStrictLinks.length; i++){
+    for (var i = 0; i < config.disconnectedStrictLinks.length; i++) {
         dsl = config.disconnectedStrictLinks[i];
-        if(link == dsl ||link == dsl + '/')
+        if (link == dsl || link == dsl + '/')
             return true;
     }
     return false;
 };
 
-module.exports.isAdminRequiredLink = function(link){
+module.exports.isAdminRequiredLink = function (link) {
     var arbl, arsl;
-    for(var i =0; i < config.adminRequiredBeginLinks.length; i++){
+    for (var i = 0; i < config.adminRequiredBeginLinks.length; i++) {
         arbl = config.adminRequiredBeginLinks[i];
-        if(link.indexOf(arbl) == 0)
+        if (link.indexOf(arbl) == 0)
             return true;
     }
-    for(var i =0; i < config.adminRequiredStrictLinks.length; i++){
+    for (var i = 0; i < config.adminRequiredStrictLinks.length; i++) {
         arsl = config.adminRequiredStrictLinks[i];
-        if(link == arsl ||link == arsl + '/')
+        if (link == arsl || link == arsl + '/')
             return true;
     }
     return false;

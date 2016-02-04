@@ -12,26 +12,28 @@ var config = require('../config.json');
 var jwt = require('jsonwebtoken');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res) {
-  User.
-      find().
-      exec(function(err, users){
-        res.json(users);
-      });
-});
+///* GET users listing. */
+//router.get('/', function(req, res) {
+//  User.
+//      find().
+//      exec(function(err, users){
+//        res.json(users);
+//      });
+//});
 
 // TODO: Check why it throw an error (500)
 router.get('/', function(req, res) {
     var token = new Cookies(req, res).get('access_token');
     var user = jwt.decode(token, config.secret);
-    res.render('User/profile', { user : user });
+    logger.debug('User retrieved in token:'+JSON.stringify(user.email));
+    //res.send(JSON.stringify(user._doc));
+    res.render('User/profile', { user : user._doc });
 });
 
-router.get('/Profile/:value', function(req, res) {
+router.get('/:value', function(req, res) {
     var token = new Cookies(req, res).get('access_token');
     var user = jwt.decode(token, config.secret);
-    res.render('User/profile', { user : user ,profileUpdated : req.params.value});
+    res.render('User/profile', { user : user._doc ,profileUpdated : req.params.value });
 });
 
 /* DELETE user */
@@ -66,12 +68,10 @@ router.post('/updUser', function(req, res, next) {
             {
 
                 User.findOne({_id: req.body.userId}, function(err,user) {
-                    utils.createCookie(utils.createToken(user), '/api/users/Profile/Le profile a été mis à jour !', req, res);
+                    utils.createCookie(utils.createToken(user), '/api/users/profile/Le profile a été mis à jour !', req, res);
                 });
             }
-
         });
-
 });
 
 router.post('/updUserPass', function(req, res, next) {
@@ -108,21 +108,17 @@ router.post('/updUserPass', function(req, res, next) {
                                 User.findOne({_id: req.body.userIdPass}, function(err,user) {
                                     if(err) logger.error(err.message);
 
-                                    utils.createCookie(utils.createToken(user), '/api/users/Profile/Le mot de passe a été mis à jour !', req, res);
+                                    utils.createCookie(utils.createToken(user), '/api/users/profile/Le mot de passe a été mis à jour !', req, res);
                                 });
                             });
                     }
                 });
             });
         }
-        else
-        {
+        else{
             res.redirect('/api/users/Profile/Les deux mots de passe ne sont pas identiques !');
         }
-
-
     }
-
 });
 
 router.get('/setup', function(req, res) {

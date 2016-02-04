@@ -32,5 +32,8 @@ module.exports = {
         'clientId': " 865649978609-2rsbrjkj8j56o839rp7cd561e27nen5i.apps.googleusercontent.com",
         'clientSecret': " MgWRF6VcUUCDQkwty_5_X489",
         'refreshToken': "1/OVpUWLHSdRdJAkatEUf8LuarThmMEKfqZFU4UQQmfMlIgOrJDtdun6zK6XiATCKT"
+    },
+    'smtp':{
+        sender:'labodevtest@gmail.com',
     }
 };

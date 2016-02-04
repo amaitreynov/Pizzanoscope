@@ -20,6 +20,7 @@ var User = new Schema({
     address: { type: String },
     phoneNumber: { type: String, required: true},
     admin: { type: Boolean, required: true },
+    verified: { type: Boolean, required: true, default: false },
     class: { type: String, required: true },
     created_at: { type: Date, required: true, default: Date.now },
     updated_at: { type: Date, required: true, default: Date.now }

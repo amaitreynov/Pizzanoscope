@@ -51,7 +51,7 @@ EM.dispatchResetPasswordLink = function (user, callback) {
 };
 
 EM.composeEmailAccountValidation = function (o) {
-    var link = 'http://localhost:3000/validate?'+ o.email;
+    var link = 'http://localhost:3000/api/validate/'+ o.email;
     logger.debug('Link created:'+link);
     var html = "<html><body>";
     html += "Hi " + o.firstname + ",<br><br>";

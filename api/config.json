@@ -3,13 +3,16 @@
 
   "_comment": "No connection required/ Relative Link",
   "disconnectedBeginLinks": [
-      "/api/signUp"
-      ],
+      "/api/signUp",
+      "/api/validate",
+      "/api/login"
+  ],
 
   "_comment": "No connection required / Strict Link",
   "disconnectedStrictLinks":[
       "/",
       "/api/login",
+      "/api/login/",
       "/api/logout",
       "/api/users/setup"
       ],

@@ -57,8 +57,7 @@ router.get("/:mail", function (req, res) {
                                 if (err)throw err;
                                 else {
                                     logger.debug("Updated user object: \n" + updatedUser);
-                                    //req.flash('emailValidation', 'Merci, votre email est bien vérifié !');
-                                    res.redirect('/api/profile/Merci, votre email est bien vérifié !');
+                                    res.redirect('/api/login/Merci, votre email est bien vérifié !');
                                 }
                             });
                     }

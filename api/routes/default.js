@@ -24,7 +24,11 @@ router.get(("/Login"), function (req, res) {
     res.render('Login/Login', {title: 'Login'});
 });
 
-router.get(("/logout"), function (req, res) {
+router.get(("/Login/:value"), function (req, res) {
+    res.render('Login/Login', {title: 'Login', message: req.params.value});
+});
+
+router.get(("/Logout"), function (req, res) {
     res.clearCookie('access_token');
     res.clearCookie('order');
     res.redirect('/');

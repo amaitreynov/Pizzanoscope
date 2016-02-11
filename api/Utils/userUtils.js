@@ -39,27 +39,35 @@ module.exports.authenticate = function (req, res, next) {
             }));
         }
 
-        user.comparePassword(password, function (err, isMatch) {
-            if (isMatch && !err) {
+        if(user.verified == true)
+        {
+            user.comparePassword(password, function (err, isMatch) {
+                if (isMatch && !err) {
 
-                securityUtil.createToken(user, next, function (token, err) {
-                    if (err)
-                        logger.info(err.message);
-
-                    securityUtil.createCookie(token, req, res, next, function (err) {
+                    securityUtil.createToken(user, next, function (token, err) {
                         if (err)
                             logger.info(err.message);
 
-                        res.redirect('/api/product/getAll');
-                    });
-                });
+                        securityUtil.createCookie(token, req, res, next, function (err) {
+                            if (err)
+                                logger.info(err.message);
 
-            } else {
-                return next(new UnauthorizedAccessError("401", {
-                    message: 'Invalid email or password'
-                }));
-            }
-        });
+                            res.redirect('/api/product/getAll');
+                        });
+                    });
+
+                } else {
+                    return next(new UnauthorizedAccessError("401", {
+                        message: 'Invalid email or password'
+                    }));
+                }
+            });
+        }
+        else {
+            return next(new UnauthorizedAccessError("401", {
+                message: 'Invalid Account, Check your verification email'
+            }));
+        }
     });
 
 };

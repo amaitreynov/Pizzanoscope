@@ -19,8 +19,7 @@ router.post('/addUser', function (req, res) {
         if (req.body.checkpass == req.body.pass) {
             if (m_mail.indexOf("@ynov.com") > -1) {
                 User.find({
-                    email: m_mail,
-                    username: req.body.username
+                    email: m_mail
                 }).exec(function (err, result) {
                     if (_.isEmpty(result) || _.isNull(result)) {
                         var user = new User({
@@ -48,7 +47,7 @@ router.post('/addUser', function (req, res) {
                                         res.render('SignUp/signUpSuccess', {
                                             registerSuccess: "Merci, vous êtes bien inscrit !\n" +
                                             "Un email contenant un lien de confirmation de votre adresse mail\n" +
-                                            "vous a été envoyé à l'adresse mail " + user.email + "\n Merci de confirmer votre email :)",
+                                            "vous a été envoyé à l'adresse mail " + m_mail + ".\n Merci de confirmer votre email :)",
                                             email: m_mail,
                                             pass: req.body.pass
                                         });

@@ -6,6 +6,7 @@
     "start": "nodemon ./api/app.js"
   },
   "dependencies": {
+    "async": "^1.5.2",
     "bcryptjs": "^2.3.0",
     "body-parser": "~1.13.2",
     "compression": "^1.6.0",
@@ -22,6 +23,7 @@
     "mongoose": "^4.2.5",
     "morgan": "~1.6.1",
     "njwt": "^0.2.3",
+    "noty": "^2.3.8",
     "on-finished": "^2.3.0",
     "paypal-rest-sdk": "^1.6.6",
     "response-time": "^2.3.1",

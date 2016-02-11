@@ -16,25 +16,25 @@ var mongoose = require('mongoose'),
     User = mongoose.model('User');
 
 
-    router.get(("/"), function (req, res) {
-        res.render('Login/Login', {title: 'Login'});
-    });
+router.get(("/"), function (req, res) {
+    res.render('Login/Login', {title: 'Login'});
+});
 
-    router.get(("/Login"), function (req, res) {
-        res.render('Login/Login', {title: 'Login'});
-    });
+router.get(("/Login"), function (req, res) {
+    res.render('Login/Login', {title: 'Login'});
+});
 
-    router.get(("/logout"), function (req, res) {
-        res.clearCookie('access_token');
-        res.clearCookie('order');
-        res.redirect('/');
-    });
+router.get(("/logout"), function (req, res) {
+    res.clearCookie('access_token');
+    res.clearCookie('order');
+    res.redirect('/');
+});
 
-    router.post(("/Login"), function (req, res, next) {
-        userUtil.authenticate(req, res, next);
-    });
+router.post(("/Login"), function (req, res, next) {
+    userUtil.authenticate(req, res, next);
+});
 
 
-    router.unless = require("express-unless");
+router.unless = require("express-unless");
 
 module.exports = router;

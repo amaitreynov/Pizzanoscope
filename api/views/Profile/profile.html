@@ -14,7 +14,7 @@
             <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
             <div class="container">
                 <div class="inner">
-                    <h2 class="heading">Profile Utilisateurs</h2>
+                    <h2 class="heading">Profil utilisateur</h2>
                     <ol class="ht-breadcrumb">
                         <li><a href="/api/profile/">Profile</a></li>
                         <li><a href="#">Dernières Commandes</a></li>
@@ -33,11 +33,11 @@
                         <div class="hs-content col-xs-12 col-sm-8 col-sm-offset-2">
                             <div class="ht-form-block">
                                 <div class="text-center">
-                                    <h3 class="heading">Profile</h3>
+                                    <h3 class="heading">Profil</h3>
                                     <p class="register_warning has-error"><p class="signUpRappel"> {{profileUpdated}}</p></p>
-
                                 </div>
                                 <form action="/api/profile/updateProfile" method="post">
+
                                     <div class="row">
                                         <input id="userId" name="userId" type="hidden" value="{{ user._id}}">
                                         <div class="form-group col-xs-12 col-sm-4">
@@ -71,7 +71,7 @@
                                         </div>
                                         <div class="form-group submit-group">
                                             <button type="submit" class="ht-button view-more-button">
-                                                <i class="fa fa-arrow-left"></i>Mettre à jour le profile<i class="fa fa-arrow-right"></i>
+                                                <i class="fa fa-arrow-left"></i>Mettre à jour le profil<i class="fa fa-arrow-right"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -81,6 +81,7 @@
                                     <h3 class="heading">Mot de passe</h3>
                                 </div>
                                 <form action="/api/profile/updateProfilePassword" method="post">
+
                                     <div class="row">
                                         <input id="userIdPass" name="userIdPass" type="hidden" value="{{ user._id}}">
                                         <div class="form-group col-xs-12 col-sm-6">

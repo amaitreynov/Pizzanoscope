@@ -28,6 +28,12 @@ router.get('/:value', function (req, res) {
     res.render('Profile/profile', {user: user._doc, profileUpdated: req.params.value});
 });
 
+router.get('/:value', function (req, res) {
+    var token = new Cookies(req, res).get('access_token');
+    var user = jwt.decode(token, config.secret);
+    res.render('User/profile', {user: user._doc, profileUpdated: req.params.value});
+});
+
 router.post('/updateProfile', function (req, res, next) {
     User.findOneAndUpdate(
         {_id: req.body.userId},
@@ -58,8 +64,6 @@ router.post('/updateProfile', function (req, res, next) {
                     res.redirect('/api/profile/Le profil a été mis à jour !');
                 });
             });
-
-
         });
 });
 
@@ -111,10 +115,7 @@ router.post('/updateProfilePassword', function (req, res, next) {
         else {
             res.redirect('/api/profile/Les deux mots de passe ne sont pas identiques !');
         }
-
-
     }
-
 });
 
 router.get('/setup', function (req, res) {

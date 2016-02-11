@@ -18,6 +18,7 @@ var debug = require('debug')('app:' + process.pid),
     orders = require('./routes/orders'),
     default_r = require('./routes/default'),
     admin = require('./routes/admin'),
+    validate = require('./routes/validate'),
     utils = require("./Utils/securityUtils.js"),
     jwt = require('jsonwebtoken'),
     config = require('./config.json'),
@@ -131,6 +132,7 @@ app.use('/api/product', product);
 app.use('/api/basket', basket);
 app.use('/api/orders', orders);
 app.use('/api/admin', admin);
+app.use('/api/validate', validate);
 
 
 // all other requests redirect to 404

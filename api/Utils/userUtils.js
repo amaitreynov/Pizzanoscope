@@ -42,8 +42,17 @@ module.exports.authenticate = function (req, res, next) {
         user.comparePassword(password, function (err, isMatch) {
             if (isMatch && !err) {
 
-                securityUtil.createCookie(securityUtil.createToken(user), req, res, next);
-                res.redirect('/api/product/getAll');
+                securityUtil.createToken(user, next, function (token, err) {
+                    if (err)
+                        logger.info(err.message);
+
+                    securityUtil.createCookie(token, req, res, next, function (err) {
+                        if (err)
+                            logger.info(err.message);
+
+                        res.redirect('/api/product/getAll');
+                    });
+                });
 
             } else {
                 return next(new UnauthorizedAccessError("401", {

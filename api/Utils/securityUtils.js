@@ -21,24 +21,27 @@ var debug = require('debug')('app:utils:' + process.pid),
     UnauthorizedAccessError = require('../errors/UnauthorizedAccessError.js'),
     NotFoundError = require('../errors/NotFoundError.js');
 
-module.exports.createToken = function createToken (user) {
+module.exports.createToken = function createToken (user, next, callback) {
 
     if (_.isEmpty(user)) {
-        return next(new Error('User data cannot be empty.'));
+        callback(new Error('Profile data cannot be empty.'));
     }
 
     var token = jwt.sign(user, config.secret);
-    return token;
+    callback(token);
 };
 
-module.exports.createCookie = function(jsonToken, req, res, next) {
+module.exports.createCookie = function(jsonToken, req, res, next, callback) {
 
+    if (_.isEmpty(jsonToken)) {
+        callback(new Error('jsonToken cannot be empty.'));
+    }
     new Cookies(req, res).set('access_token', jsonToken, {
         httpOnly: true,
         secure: false
     });
 
-    return next();
+    callback();
 
 };
 

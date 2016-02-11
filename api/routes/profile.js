@@ -6,88 +6,74 @@ var express = require('express'),
     bcrypt = require("bcryptjs"),
     _ = require('lodash'),
     logger = require('log4js').getLogger('controller.profile'),
+    async = require('async'),
     Cookies = require("cookies");
-var utils = require("../Utils/securityUtils.js");
+var securityUtil = require("../Utils/securityUtils.js");
 var config = require('../config.json');
 var jwt = require('jsonwebtoken');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res) {
-  User.
-      find().
-      exec(function(err, users){
-        res.json(users);
-      });
-});
-
 // TODO: Check why it throw an error (500)
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
     var token = new Cookies(req, res).get('access_token');
     var user = jwt.decode(token, config.secret);
-    res.render('User/profile', { user : user });
+    logger.debug(user._doc);
+    res.render('Profile/profile', {user: user._doc});
 });
 
-router.get('/Profile/:value', function(req, res) {
+router.get('/:value', function (req, res) {
     var token = new Cookies(req, res).get('access_token');
     var user = jwt.decode(token, config.secret);
-    res.render('User/profile', { user : user ,profileUpdated : req.params.value});
+    logger.debug(user._doc);
+    res.render('Profile/profile', {user: user._doc, profileUpdated: req.params.value});
 });
 
-/* DELETE user */
-router.get('/delete/:value', function(req, res){
-    utils.middleware(true, req, res, function() {
-        logger.info(req.params.value);
-        User.
-            remove({_id: req.params.value}).
-            exec(function(err, user){
-                res.json(user);
-            });
-    });
-});
-
-router.post('/updUser', function(req, res, next) {
-    User
-        .update(
+router.post('/updateProfile', function (req, res, next) {
+    User.findOneAndUpdate(
         {_id: req.body.userId},
-        {$set: {
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            username: req.body.username,
-            email: req.body.email,
-            address: req.body.address,
-            phoneNumber: req.body.phoneNumber
-        }},
-        {multi: true}
-        ).exec(function(err) {
+        {
+            $set: {
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
+                username: req.body.username,
+                email: req.body.email,
+                address: req.body.address,
+                phoneNumber: req.body.phoneNumber
+            }
+        },
+        {new: true},
+        function (err, user) {
             if (err)
                 logger.error(err.message);
-            else
-            {
 
-                User.findOne({_id: req.body.userId}, function(err,user) {
-                    utils.createCookie(utils.createToken(user), '/api/users/Profile/Le profile a été mis à jour !', req, res);
+            logger.debug(user);
+            securityUtil.createToken(user, next, function (token, err) {
+                if (err)
+                    logger.info(err.message);
+
+                securityUtil.createCookie(token, req, res, next, function (err) {
+                    if (err)
+                        logger.info(err.message);
+
+                    res.redirect('/api/profile/Le profil a été mis à jour !');
                 });
-            }
+            });
+
 
         });
-
 });
 
-router.post('/updUserPass', function(req, res, next) {
+router.post('/updateProfilePassword', function (req, res, next) {
 
-    if(req.body.password == '')
-    {
-        User.findOne({_id: req.body.userId}, function(err) {
-            if(err) logger.error(err.message);
+    if (_.isEmpty(req.body.password)) {
+        User.findOne({_id: req.body.userId}, function (err) {
+            if (err) logger.error(err.message);
 
-            res.redirect('/api/users/profile');
+            res.redirect('/api/profile/');
         });
     }
-    else
-    {
-        if(req.body.password == req.body.checkPass)
-        {
+    else {
+        if (req.body.password == req.body.checkPass) {
             bcrypt.genSalt(10, function (err, salt) {
                 if (err) {
                     return next(err);
@@ -96,28 +82,34 @@ router.post('/updUserPass', function(req, res, next) {
                     if (err) {
                         return next(err);
                     }
-                    if (req.body.password != '')
-                    {
-                        User.
-                            update(
+                    if (!_.isEmpty(req.body.password)) {
+                        User.findOneAndUpdate(
                             {_id: req.body.userIdPass},
-                            {$set: {password: hash}}
-                        ).exec(function (err) {
-                                if(err) logger.error(err.message);
+                            {$set: {password: hash}},
+                            {new: true},
+                            function (err, user) {
+                                if (err)
+                                    logger.error(err.message);
 
-                                User.findOne({_id: req.body.userIdPass}, function(err,user) {
-                                    if(err) logger.error(err.message);
+                                logger.debug(user);
+                                securityUtil.createToken(user, next, function (token, err) {
+                                    if (err)
+                                        logger.info(err.message);
 
-                                    utils.createCookie(utils.createToken(user), '/api/users/Profile/Le mot de passe a été mis à jour !', req, res);
+                                    securityUtil.createCookie(token, req, res, next, function (err) {
+                                        if (err)
+                                            logger.info(err.message);
+
+                                        res.redirect('/api/profile/updateProfile/Le mot de passe a été mis à jour !');
+                                    });
                                 });
                             });
                     }
                 });
             });
         }
-        else
-        {
-            res.redirect('/api/users/Profile/Les deux mots de passe ne sont pas identiques !');
+        else {
+            res.redirect('/api/profile/Les deux mots de passe ne sont pas identiques !');
         }
 
 
@@ -125,7 +117,7 @@ router.post('/updUserPass', function(req, res, next) {
 
 });
 
-router.get('/setup', function(req, res) {
+router.get('/setup', function (req, res) {
     //res.render('setup', { title: 'Setup Page' });
     // create a sample user
     var class1 = new Class({
@@ -147,12 +139,12 @@ router.get('/setup', function(req, res) {
         class: class1,
         created_on: Date.now(),
         updated_at: Date.now()
-    }).save(function(err) {
-            if (err) logger.info(err);
+    }).save(function (err) {
+        if (err) logger.info(err);
 
-            logger.info('User saved successfully');
-            res.json({ success: true });
-        });
+        logger.info('Profile saved successfully');
+        res.json({success: true});
+    });
 });
 
 module.exports = router;

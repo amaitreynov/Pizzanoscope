@@ -23,7 +23,9 @@ var User = new Schema({
     verified: { type: Boolean, required: true, default: false },
     class: { type: String, required: true },
     created_at: { type: Date, required: true, default: Date.now },
-    updated_at: { type: Date, required: true, default: Date.now }
+    updated_at: { type: Date, required: true, default: Date.now },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
 });
 
 User.pre('save', function (next) {

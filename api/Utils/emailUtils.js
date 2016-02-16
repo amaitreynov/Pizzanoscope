@@ -11,18 +11,13 @@ var config = require('./config'),
 module.exports = EM;
 
 EM.dispatchAccountValidationLink = function (user, callback) {
-
     //We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
-    var mailgun = new Mailgun({
-        apiKey: 'key-7d3e1a0c62fc2084098e00ff32f0c06d',
-        domain: 'sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org'
-    });
-    logger.debug('Transporter:' + JSON.stringify(mailgun));
+    var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
 
     // send mail
     var data = {
         //Specify email data
-        from: 'labodevtest@gmail.com',
+        from: ES.sender,
         //The email to contact
         to: user.email,
         //Subject and text data
@@ -40,41 +35,112 @@ EM.dispatchAccountValidationLink = function (user, callback) {
         }
         //Else we can greet    and leave
         else {
-            logger.debug('Message sent' + JSON.stringify(body)+' to mail:'+user.email);
+            logger.debug('Message sent' + JSON.stringify(body) + ' to mail:' + user.email);
             callback(null, user.email);
         }
     });
 };
 
-EM.dispatchResetPasswordLink = function (user, callback) {
-   //todo to implement
+EM.dispatchResetPasswordLink = function (user, token, callback) {
+    //We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
+    var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
+
+    // send mail
+    var data = {
+        //Specify email data
+        from: ES.sender,
+        //The email to contact
+        to: user.email,
+        //Subject and text data
+        subject: 'Password recovery',
+        html: EM.composeEmailResetPassword(user, token) // html body
+    };
+
+    //Invokes the method to send emails given the above data with the helper library
+    mailgun.messages().send(data, function (err, body) {
+        //If there is an error, render the error page
+        if (err) {
+            //res.render('error', { error : err});
+            logger.error("got an error: ", err);
+            return callback(err);
+        }
+        //Else we can greet    and leave
+        else {
+            logger.debug('Message sent' + JSON.stringify(body) + ' to mail:' + user.email);
+            callback(null);
+        }
+    });
+};
+
+EM.dispatchResetPasswordConfirmation = function (user, callback) {
+    //We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
+    var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
+
+    // send mail
+    var data = {
+        //Specify email data
+        from: ES.sender,
+        //The email to contact
+        to: user.email,
+        //Subject and text data
+        subject: 'Password reset confirmation',
+        html: EM.composeEmailResetPasswordConfirmation(user) // html body
+    };
+
+    //Invokes the method to send emails given the above data with the helper library
+    mailgun.messages().send(data, function (err, body) {
+        //If there is an error, render the error page
+        if (err) {
+            //res.render('error', { error : err});
+            logger.error("got an error: ", err);
+            return callback(err);
+        }
+        //Else we can greet    and leave
+        else {
+            logger.debug('Message sent' + JSON.stringify(body) + ' to mail:' + user.email);
+            callback(null);
+        }
+    });
 };
 
 EM.composeEmailAccountValidation = function (o) {
-    var link = 'http://localhost:3000/api/validate/'+ o.email;
-    logger.debug('Link created:'+link);
+    //todo make a generic link with req.headers.host
+    var link = 'http://localhost:3000/api/validate/' + o.email;
+    logger.debug('Link created:' + link);
     var html = "<html><body>";
     html += "Hi " + o.firstname + ",<br><br>";
     html += "Your username is : <b>" + o.username + "</b><br><br>";
     html += "<a href='" + link + "'>Please click here to validate your account</a><br><br>";
     html += "If you can't click the link, copy/pasterino this in your browser : <b>" + link + "</b><br><br>";
     html += "Cheers,<br>";
-    html += "<a href='http://twitter.com/braitsch'>braitsch</a><br><br>";
     html += "</body></html>";
-    logger.debug('html created:'+html);
+    logger.debug('html created:' + html);
     return html;
 };
 
-EM.composeEmailResetPassword = function (o) {
-    var link = 'http://localhost:3000/reset-password?e=' + o.email + '&p=' + o.pass;
-    logger.debug('Link created:'+link);
+EM.composeEmailResetPassword = function (user, token) {
+    //todo make a generic link with req.headers.host
+    var link = 'http://localhost:3000/api/reset/' + token;
+    logger.debug('Link created:' + link);
     var html = "<html><body>";
-    html += "Hi " + o.firstname + ",<br><br>";
-    html += "Your username is : <b>" + o.username + "</b><br><br>";
-    html += "<a href='" + link + "'>Please click here to reset your password</a><br><br>";
+    html += "Hi " + user.firstname + ",<br><br>";
+    html += "You are receiving this because you (or someone else) have requested the reset of the password for your account.</b><br><br>";
+    html += "Please click on the following link, or paste this into your browser to complete the process:<br><br>";
+    html += "<a href='" + link + "'>Reset password</a><br><br>";
+    html += "If you can't click the link, copy/pasterino this in your browser : <b>" + link + "</b><br><br>";
+    html += "If you did not request this, please ignore this email and your password will remain unchanged.<br><br>";
     html += "Cheers,<br>";
-    html += "<a href='http://twitter.com/braitsch'>braitsch</a><br><br>";
     html += "</body></html>";
-    logger.debug('html created:'+html);
+    logger.debug('html created:' + html);
+    return html;
+};
+
+EM.composeEmailResetPasswordConfirmation = function (user) {
+    var html = "<html><body>";
+    html += "Hi " + user.firstname + ",<br><br>";
+    html += "This is a confirmation that the password for your account " + user.email + " has just been changed.</b><br><br>";
+    html += "Cheers,<br>";
+    html += "</body></html>";
+    logger.debug('html created:' + html);
     return html;
 };

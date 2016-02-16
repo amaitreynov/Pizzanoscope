@@ -27,13 +27,11 @@ module.exports = {
             'server.core': 'DEBUG'
         }
     },
-    'XOAuth2': {
-        'user': "labodevtest@gmail.com", // Your gmail address.// Not @developer.gserviceaccount.com
-        'clientId': " 865649978609-2rsbrjkj8j56o839rp7cd561e27nen5i.apps.googleusercontent.com",
-        'clientSecret': " MgWRF6VcUUCDQkwty_5_X489",
-        'refreshToken': "1/OVpUWLHSdRdJAkatEUf8LuarThmMEKfqZFU4UQQmfMlIgOrJDtdun6zK6XiATCKT"
-    },
     'smtp':{
-        sender:'labodevtest@gmail.com',
+        'sender':'labodevtest@gmail.com',
+        'mailgun':{
+            'apiKey': 'key-7d3e1a0c62fc2084098e00ff32f0c06d',
+            'domain': 'sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org'
+        }
     }
 };

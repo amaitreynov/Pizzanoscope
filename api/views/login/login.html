@@ -52,7 +52,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="login-form col-md-offset-2 col-md-8 ">
-                            <h2>Se Connecter</h2>
+                            <h2>{{title}}</h2>
                             <form name="loginform" id="loginform" action="/api/login" method="post">
                                 <p class="register_warning has-error"><p class="signUpRappel"> {{message}}</p></p>
                                 <p class="login-username">
@@ -70,6 +70,7 @@
                                     </label></p>-->
                                 <p class="login-submit">
                                     <input type="submit" name="wp-submit" id="wp-submit" class="button-primary" value="Se connecter">
+                                    <a href="/api/forgot" class="signUpLink" >Mot de passe oublié ?</a> <br>
                                     <a href="/api/signUp" class="signUpLink" >Vous n'êtes pas encore inscrit ? Vous pouvez le faire ici !</a>
                                 </p>
                             </form>

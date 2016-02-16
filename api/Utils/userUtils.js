@@ -39,16 +39,15 @@ module.exports.authenticate = function (req, res, next) {
             }));
         }
 
-        if(user.verified == true)
-        {
+        if (user.verified == true) {
             user.comparePassword(password, function (err, isMatch) {
                 if (isMatch && !err) {
 
-                    securityUtil.createToken(user, next, function (token, err) {
+                    securityUtil.createToken(user, function (token, err) {
                         if (err)
                             logger.info(err.message);
 
-                        securityUtil.createCookie(token, req, res, next, function (err) {
+                        securityUtil.createCookie(token, req, res, function (err) {
                             if (err)
                                 logger.info(err.message);
 
@@ -69,6 +68,5 @@ module.exports.authenticate = function (req, res, next) {
             }));
         }
     });
-
 };
 

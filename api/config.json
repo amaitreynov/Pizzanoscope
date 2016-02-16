@@ -1,28 +1,26 @@
 {
-  "secret":"ilovesaltynode",
-
+  "secret": "ilovesaltynode",
   "_comment": "No connection required/ Relative Link",
   "disconnectedBeginLinks": [
-      "/api/signUp",
-      "/api/validate",
-      "/api/login"
+    "/api/signUp",
+    "/api/validate",
+    "/api/forgot",
+    "/api/reset",
+    "/api/login"
   ],
-
   "_comment": "No connection required / Strict Link",
-  "disconnectedStrictLinks":[
-      "/",
-      "/api/login",
-      "/api/login/",
-      "/api/logout",
-      "/api/users/setup"
-      ],
-
+  "disconnectedStrictLinks": [
+    "/",
+    "/api/login",
+    "/api/login/",
+    "/api/logout",
+    "/api/users/setup"
+  ],
   "_comment": "Required Connection / Relative Link",
   "adminRequiredBeginLinks": [
-      "/api/admin"
-      ],
-
+    "/api/admin"
+  ],
   "_comment": "Required connection / Strict Link",
   "adminRequiredStrictLinks": [
-      ]
+  ]
 }

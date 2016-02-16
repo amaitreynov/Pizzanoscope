@@ -18,6 +18,7 @@ var Class = mongoose.model('Class');
 
 /* GET home page. */
 router.get('/getAll', function (req, res) {
+    //todo add some ajax to give user feedback while loading the pizzas ?
         var orderCookie = new Cookies(req, res).get('order');
         var optionsget = {
             host: 'services.dominos.com.au',

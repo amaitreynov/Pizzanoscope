@@ -9,7 +9,6 @@ var debug = require('debug')('app:utils:' + process.pid),
     nJwt = require('nJwt'),
     jwt = require('jsonwebtoken'),
     logger = require('log4js').getLogger('utils.security'),
-    secretKey = uuid.v4(),
     config = require('../config.json'),
     _ = require("lodash"),
     mongoose = require('mongoose'),
@@ -21,11 +20,7 @@ var debug = require('debug')('app:utils:' + process.pid),
     UnauthorizedAccessError = require('../errors/UnauthorizedAccessError.js'),
     NotFoundError = require('../errors/NotFoundError.js');
 
-module.exports.getPathParams = function getPathParams(req) {
-    return url.parse(req.url).pathname.split('/').slice(1);
-};
-
-module.exports.createToken = function createToken(user, next, callback) {
+module.exports.createToken = function createToken(user, callback) {
     if (_.isEmpty(user)) {
         callback(new Error('Profile data cannot be empty.'));
     }
@@ -34,7 +29,7 @@ module.exports.createToken = function createToken(user, next, callback) {
     callback(token);
 };
 
-module.exports.createCookie = function (jsonToken, req, res, next, callback) {
+module.exports.createCookie = function (jsonToken, req, res, callback) {
 
     if (_.isEmpty(jsonToken)) {
         callback(new Error('jsonToken cannot be empty.'));
@@ -46,21 +41,6 @@ module.exports.createCookie = function (jsonToken, req, res, next, callback) {
 
     callback();
 };
-
-//module.exports.verify = function (req, res, next) {
-//    logger.info("Verifying token");
-//    var token = exports.fetch(req, res);
-//    nJwt.verify(token, secretKey, function (err, token) {
-//        if (err) {
-//            req.user = undefined;
-//            return next(new UnauthorizedAccessError("invalid_token"));
-//        } else {
-//            req.user = data;
-//            logger.info("Token has been validated");
-//            next();
-//        }
-//    });
-//};
 
 module.exports.isDisconnectedLink = function (link) {
     var dbl, dsl;

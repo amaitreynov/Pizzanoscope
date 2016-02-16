@@ -7,8 +7,8 @@ var User = mongoose.model("User"),
     emailUtils = require('../Utils/emailUtils');
 var Class = mongoose.model("Class");
 
-router.get(("/"), function (req, res) {
-    res.render('SignUp/signUp', {title: 'SignUpPage'});
+router.get(('/'), function (req, res) {
+    res.render('SignUp/signUp', {title: 'S\'inscrire'});
 });
 
 router.post('/addUser', function (req, res) {
@@ -42,13 +42,13 @@ router.post('/addUser', function (req, res) {
                             else {
                                 logger.info('User saved successfully:' + user);
                                 //send email
-                                emailUtils.dispatchAccountValidationLink(user, function (err, user) {
+                                emailUtils.dispatchAccountValidationLink(user, function (err, userEmail) {
                                     if (!err) {
                                         res.render('SignUp/signUpSuccess', {
                                             registerSuccess: "Merci, vous êtes bien inscrit !\n" +
                                             "Un email contenant un lien de confirmation de votre adresse mail\n" +
-                                            "vous a été envoyé à l'adresse mail " + m_mail + ".\n Merci de confirmer votre email :)",
-                                            email: m_mail,
+                                            "vous a été envoyé à l'adresse mail " + userEmail + ".\n Merci de confirmer votre email :)",
+                                            email: userEmail,
                                             pass: req.body.pass
                                         });
                                     }

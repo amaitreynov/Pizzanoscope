@@ -10,6 +10,7 @@ var config = require('./config'),
     EM = {};
 module.exports = EM;
 
+//TODO refactor code in such a way that we declare mailgun instance and send message only once
 EM.dispatchAccountValidationLink = function (user, callback) {
     //We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
     var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
@@ -21,7 +22,7 @@ EM.dispatchAccountValidationLink = function (user, callback) {
         //The email to contact
         to: user.email,
         //Subject and text data
-        subject: 'Hello from Mailgun',
+        subject: 'Email validation',
         html: EM.composeEmailAccountValidation(user) // html body
     };
 

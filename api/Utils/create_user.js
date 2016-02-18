@@ -22,13 +22,13 @@ logger.info("Password: %s", password);
 
 logger.info("Creating a new user in Mongo");
 
-
 var mongoose = require('mongoose');
 mongoose.set('debug', true);
 mongoose.connect(mongoose_uri);
 mongoose.connection.on('error', function () {
     logger.info('Mongoose connection error', arguments);
 });
+
 mongoose.connection.once('open', function callback() {
     logger.info("Mongoose connected to the database");
 
@@ -45,5 +45,4 @@ mongoose.connection.once('open', function callback() {
         }
         process.exit();
     });
-
 });

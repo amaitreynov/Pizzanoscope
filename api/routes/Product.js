@@ -4,9 +4,7 @@ var mongoose = require('mongoose');
 var router = express.Router();
 var paypal = require('paypal-rest-sdk');
 var Cookies = require("cookies");
-var UtilsOrder = require('../Utils/orderUtils');
 var logger = require('log4js').getLogger('controller.product');
-var utils = require("../Utils/securityUtils.js");
 var config = require('../config.json');
 var jwt = require('jsonwebtoken');
 

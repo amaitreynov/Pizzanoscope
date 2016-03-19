@@ -8694,4 +8694,11 @@ table th[class*="col-"] {
   color: green;
 }
 
+/*Admin.js*/
+.refAdminUser {
+  color: white;
+}
+.adminRecoverPasswordForm {
+  display: inline;
+}
 /*# sourceMappingURL=style.css.map */

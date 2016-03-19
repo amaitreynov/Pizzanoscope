@@ -31,7 +31,7 @@ EM.dispatchAccountValidationLink = function (user, callback) {
         //If there is an error, render the error page
         if (err) {
             //res.render('error', { error : err});
-            logger.error("got an error: ", err);
+            logger.error("got an error: "+err.message);
             return callback(err);
         }
         //Else we can greet    and leave
@@ -62,7 +62,7 @@ EM.dispatchResetPasswordLink = function (user, token, callback) {
         //If there is an error, render the error page
         if (err) {
             //res.render('error', { error : err});
-            logger.error("got an error: ", err);
+            logger.error("got an error sendingPasswordReset: ", err);
             return callback(err);
         }
         //Else we can greet    and leave

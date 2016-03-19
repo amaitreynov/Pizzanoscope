@@ -20,6 +20,12 @@ router.get('/:value', function (req, res) {
 });
 
 router.post('/', function (req, res) {
+    var emailInput;
+    if (!_.isNull(req.body.AdminRecoverEmail))
+        emailInput =  req.body.AdminRecoverEmail;
+    else
+        emailInput = req.body.email;
+
     var registerErr = null;
     logger.info('Processing sending password recovery mail...');
     //res.redirect('/api/login/API non implementee');
@@ -32,7 +38,7 @@ router.post('/', function (req, res) {
             });
         },
         function (token, done) {
-            User.findOne({email: req.body.email}, function (err, user) {
+            User.findOne({email: emailInput}, function (err, user) {
                 if (!user) {
                     //todo flash info / notify the user with a message
                     registerErr = 'No account with that email address exists.';
@@ -56,8 +62,14 @@ router.post('/', function (req, res) {
             });
         }
     ], function (err) {
-        if (err) return next(err);
-        res.redirect('/forgot');
+        if (err) logger.error(err.message);
+
+        if (!_.isNull(req.body.AdminRecoverEmail))
+            res.redirect('/api/admin/users');
+        else
+            res.redirect('/forgot');
+
+
     });
 });
 

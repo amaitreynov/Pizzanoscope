@@ -56,6 +56,21 @@ User.pre('save', function (next) {
     }
 });
 
+User.methods.cryptPassword = function (password, callback) {
+    bcrypt.genSalt(10, function (err, salt) {
+        if (err)
+            return callback(new Error(err.message));
+
+        bcrypt.hash(password, salt, function (err, hash) {
+            if (err)
+                callback(new Error(err.message));
+
+            callback(hash);
+        });
+    });
+};
+
+
 User.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {

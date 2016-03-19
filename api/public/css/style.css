@@ -8668,8 +8668,13 @@ table th[class*="col-"] {
   margin-top: 11px;
 }
 
-.ht-form-block-back-user {
+.ht-form-block-back-user ,.ht-form-block-profile-order {
   margin : 10px;
+}
+
+.bo-order-pizza {
+  display: inline-block;
+  margin-left: 10px;
 }
 
 #isAdmin {
@@ -8678,6 +8683,15 @@ table th[class*="col-"] {
 
 #delUserAdmin {
   float: none !important;
+}
+
+/*affiche order details profile.js*/
+.orderTobePaid {
+  color: red;
+}
+
+.orderPayed {
+  color: green;
 }
 
 /*# sourceMappingURL=style.css.map */

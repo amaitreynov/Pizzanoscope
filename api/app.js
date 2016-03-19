@@ -27,6 +27,8 @@ var debug = require('debug')('app:' + process.pid),
     bodyParser = require("body-parser"),
     Cookies = require("cookies");
 
+
+
 var logger = configureLogging();
 logger.info("-- Starting application --");
 logger.info("-- Initializing  logger --");
@@ -53,6 +55,7 @@ mongoose.connection.once('open', function callback() {
 
 logger.info("-- Initializing express --");
 var express = require('express'), app = express();
+app.locals.moment = require('moment');
 
 logger.info("-- Initializing Swig --");
 var swig = require('swig');

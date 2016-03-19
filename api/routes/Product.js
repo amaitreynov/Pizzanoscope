@@ -8,7 +8,7 @@ var logger = require('log4js').getLogger('controller.product');
 var config = require('../config.json');
 var jwt = require('jsonwebtoken');
 
-
+var OrderDB = require('../Models/OrderDB');
 var Order = mongoose.model('Order');
 var Pizza = mongoose.model('Pizza');
 var User = mongoose.model('User');

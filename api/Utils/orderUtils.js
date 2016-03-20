@@ -12,12 +12,12 @@ var User = mongoose.model('User');
 var Class = mongoose.model('Class');
 
 module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, next) {
-    logger.info('adding the pizza '+JSON.stringify(pizzaToAdd)+' to pizzaList of order '+JSON.stringify(orderToUpdate));
+    logger.info('adding the pizza ' + JSON.stringify(pizzaToAdd) + ' to pizzaList of order ' + JSON.stringify(orderToUpdate));
 
     var pizzaListTemp = orderToUpdate.pizzaList;
     pizzaListTemp.push(pizzaToAdd._id);
-    logger.debug('pizzalistTemp: '+pizzaListTemp);
-    
+    logger.debug('pizzalistTemp: ' + pizzaListTemp);
+
     Order.findOneAndUpdate(
         {_id: orderToUpdate._id},
         {
@@ -40,7 +40,7 @@ module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, n
 };
 
 module.exports.getPizzasFromOrder = function (orderId, next) {
-    logger.info('Getting pizzaList from order '+JSON.stringify(orderId));
+    logger.info('Getting pizzaList from order ' + JSON.stringify(orderId));
     Order.findOne({_id: orderId},
         function (err, order) {
             if (err)
@@ -81,7 +81,7 @@ module.exports.createPizza = function (req, next) {
 };
 
 module.exports.createOrder = function (user, pizzaList, next) {
-    logger.info('Creating order with pizzaList '+pizzaList+' for user: '+JSON.stringify(user));
+    logger.info('Creating order with pizzaList ' + pizzaList + ' for user: ' + JSON.stringify(user));
     //create order with pizzalist
     var order = new Order({
         "pizzaList": [pizzaList],
@@ -107,29 +107,44 @@ module.exports.createOrder = function (user, pizzaList, next) {
 //TODO add error in callback return if error happens
 module.exports.deletePizzaIntoOrder = function (pizza, orderToUpdate, next) {
     logger.info('Deleting pizza from order\'s pizzaList...');
-    //TODO catch error in this function if happens
-    var pizzaListTemp = orderToUpdate.pizzaList;
-    pizzaListTemp.forEach(function (item) {
-        if (pizza._id == item._id) {
-            pizzaListTemp.splice(pizzaListTemp.indexOf(item), 1);
-            //console.log(PizzaListTemp.indexOf(item));
-        }
-    });
+    logger.debug('pizza to delete received:'+pizza._id);
+    logger.debug('orderToUpdate.pizzaList received' + orderToUpdate.pizzaList);
+    Order.findOne({_id: orderToUpdate._id},
+        function (err, orderFinded) {
 
-    Order.findOneAndUpdate(
-        {_id: orderToUpdate._id},
-        {
-            updated_at: Date.now(),
-            pizzaList: pizzaListTemp
-        },
-        {w: 1},
-        {new:true},
-        function (err, updatedOrder) {
-            if (err) {
-                return next(err, null);
-            }
-            else {
-                return next(null,updatedOrder);
-            }
+            //TODO catch error in this function if happens
+            //logger.debug('Deleting Pizza :'+pizza);
+            var pizzaListTemp = orderFinded.pizzaList;
+            pizzaListTemp.forEach(function (item) {
+                logger.debug('Item :'+item);
+                if (pizza.equals(item)) {
+                    logger.debug('Removed Pizza :'+item);
+                    pizzaListTemp.splice(pizzaListTemp.indexOf(item), 1);
+
+                    //console.log(PizzaListTemp.indexOf(item));
+                }
+                //logger.debug('Current pizzaList '+pizzaListTemp);
+            });
+
+            logger.debug('updated pizzaList to update ' + pizzaListTemp);
+
+            orderFinded.update(
+                {
+                    $set: {
+                        updated_at: Date.now(),
+                        pizzaList: pizzaListTemp
+                    }
+                },
+                {new: true},
+                function (err) {
+                    if (err) {
+                        return next(err, null);
+                    }
+                    else {
+                        return next(null, orderFinded);
+                    }
+                });
+
         });
+
 };

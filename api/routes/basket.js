@@ -80,7 +80,7 @@ logger.debug('value1 value:'+req.params.value1);
 
 router.get('/addPizza/name/:value1/price/:value2', function(req, res) {
     var cookieJson = new Cookies(req, res).get("order");
-
+    logger.debug(JSON.parse(cookieJson))
     var firstPizza = new Pizza({
         name: req.params.value1,
         description: "Description Pizza",

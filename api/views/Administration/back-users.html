@@ -18,7 +18,9 @@
         <div class="inner">
             <h2 class="heading">Administration</h2>
             <ol class="ht-breadcrumb">
-                <li><a href="/api/admin/orders">Liste Commandes</a></li>
+                <li><a href="/api/admin/orders">Tableau de bord</a></li>
+                <li><a href="/api/admin/orders">Session de vente en cours</a></li>
+                <li><a href="/api/admin/orders">Historique Session de vente</a></li>
                 <li><a href="/api/admin/users">Liste Utilisateurs</a></li>
             </ol>
         </div>
@@ -116,7 +118,7 @@
                                         {% endif %}
                                     </select>
                                     <label for="active">Email activated :</label>
-                                    <input id="active" name="active" type="text" value="{{user.verified}}">
+                                    <input id="active" name="active" type="text" value="{%if user.verified==true%}Verified{%else%}Pending{%endif%}" disabled="disabled">
                                 </div>
                             </div>
 

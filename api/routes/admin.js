@@ -86,7 +86,7 @@ router.get('/orders', function (req, res) {
 
             Pizza.find().exec(function (err, pizzas) {
                 //res.json(pizzas);
-                res.render('Administration/back-orders', {orders: orders, users: users, pizzas: pizzas});
+                res.render('Administration/back-dashboard-session', {orders: orders, users: users, pizzas: pizzas});
             });
         });
     });
@@ -95,7 +95,7 @@ router.get('/orders', function (req, res) {
 /* GET admin orders page. */
 router.post('/orders/:orderId', function (req, res) {
     Order.find().exec(function (err, orders) {
-        res.render('Administration/back-orders', orders);
+        res.render('Administration/back-dashboard-session', orders);
     });
     //res.write('hello');
 });

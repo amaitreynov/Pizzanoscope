@@ -1,0 +1,75 @@
+{% extends "../layout.html" %}
+
+{% block head %}
+{% parent %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+{% endblock %}
+
+
+{% block header %}
+{% parent %}
+{% endblock %}
+
+{% block heading %}
+<div class="ht-page-header">
+    <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
+    <div class="container">
+        <div class="inner">
+            <h2 class="heading">Administration</h2>
+            <ol class="ht-breadcrumb">
+                <li><a href="/api/admin/orders">Tableau de bord</a></li>
+                <li><a href="/api/admin/orders">Session de vente en cours</a></li>
+                <li><a href="/api/admin/orders">Historique Session de vente</a></li>
+                <li><a href="/api/admin/users">Liste Utilisateurs</a></li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="ht-section hs-editors grid">
+    <div class="hs-content">
+        <div class="container">
+
+            {% for order in orders %}
+            <hr>
+            <div class="row">
+                {% for user in users %}
+                <div class="bo-order-user">
+                    {% if user.id == order.user %}
+                    <h3>Order's user: {{user.username}}</h3>
+
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <h3>Order details: {{order.state}}</h3>
+                {% for pizzaId in order.pizzaList %}
+                <div class="bo-order-pizzalist">
+                    {% for pizza in pizzas %}
+                    {% if pizza.id == pizzaId %}
+                    <div class="bo-order-pizza">
+                        <h4>Pizza details:</h4>
+                        <li>{{pizza.name}}</li>
+                        <li>{{pizza.description}}</li>
+                        <li>{{pizza.price}}</li>
+                        <li>{{pizza.sizeType}}</li>
+                        <li>{{pizza.doughType}}</li>
+                    </div>
+                    {% endif %}
+
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{% parent %}
+{% endblock %}

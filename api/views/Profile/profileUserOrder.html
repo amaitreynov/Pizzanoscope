@@ -1,0 +1,79 @@
+{% extends "../layout.html" %}
+
+{% block head %}
+{% parent %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block header %}
+{% parent %}
+{% endblock %}
+
+{% block heading %}
+<div class="ht-page-header">
+    <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
+    <div class="container">
+        <div class="inner">
+            <h2 class="heading">Profil utilisateur</h2>
+            <ol class="ht-breadcrumb">
+                <li><a href="/api/profile/viewProfile">Profile</a></li>
+                <li><a href="/api/profile/lastOrder/{{ user._id}}">Dernières Commandes</a></li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="ht-section hs-editors grid">
+    <div class="hs-content">
+        <div class="container">
+            <div class="bo-order-user">
+                <B>Order's user : </B> {{user.firstname }} {{user.lastname}}
+            </div>
+            <hr>
+            {% for order in orders %}
+            <div class="ht-form-block ht-form-block-profile-order">
+                <div class="row">
+                    <div class="row-member">
+                        <h3 class="entry-name">
+                            {%if order.state == 'TOBEPAID'%}
+                                <span class="orderTobePaid">In Progress</span> - {{ moment(order.updated_at).format('MMMM Do YYYY, h:mm:ss a') }}
+                            {% else %}
+                                <span class="orderPayed">Order Payed</span> - {{order.updated_at}}
+                            {% endif %}
+                            <button type="button" class="ht-button btn btn-info" data-toggle="collapse"
+                                    data-target=".order-details-{{order.id}}">Détails
+                            </button>
+                        </h3>
+                    </div>
+                    <div class="order-details-{{order.id}} collapse">
+                        <div class="bo-order-pizzalist">
+                            <h4>Basket details :</h4>
+                            {% for pizzaId in order.pizzaList %}
+                            {% for pizza in pizzas %}
+                            {% if pizza.id == pizzaId %}
+                            <div class="bo-order-pizza">
+                                <B>{{pizza.name}}</B>
+                                <li>Prix : {{pizza.price}}</li>
+                                <li>Taille de la pizza : {{pizza.sizeType}}</li>
+                                <li>Type de pate : {{pizza.doughType}}</li>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{% parent %}
+{% endblock %}

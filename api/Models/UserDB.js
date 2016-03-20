@@ -19,7 +19,8 @@ var User = new Schema({
     avatar: { type: String, required: true},
     address: { type: String },
     phoneNumber: { type: String, required: true},
-    admin: { type: Boolean, required: true },
+    admin: { type: Boolean, required: true, default: false },
+    active: { type: Boolean, required: true, default: true },
     verified: { type: Boolean, required: true, default: false },
     class: { type: String, required: true },
     created_at: { type: Date, required: true, default: Date.now },
@@ -55,6 +56,21 @@ User.pre('save', function (next) {
         return next();
     }
 });
+
+User.methods.cryptPassword = function (password, callback) {
+    bcrypt.genSalt(10, function (err, salt) {
+        if (err)
+            return callback(new Error(err.message));
+
+        bcrypt.hash(password, salt, function (err, hash) {
+            if (err)
+                callback(new Error(err.message));
+
+            callback(hash);
+        });
+    });
+};
+
 
 User.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {

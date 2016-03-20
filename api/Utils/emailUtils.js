@@ -8,98 +8,94 @@ var config = require('./config'),
     Mailgun = require('mailgun-js'),
     securityUtils = require('./securityUtils'),
     EM = {};
+var nodemailer = require('nodemailer');
+var mg = require('nodemailer-mailgun-transport');
 module.exports = EM;
 
 //TODO refactor code in such a way that we declare mailgun instance and send message only once
 EM.dispatchAccountValidationLink = function (user, callback) {
-    //We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
-    var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
-
-    // send mail
-    var data = {
-        //Specify email data
-        from: ES.sender,
-        //The email to contact
-        to: user.email,
-        //Subject and text data
-        subject: 'Email validation',
-        html: EM.composeEmailAccountValidation(user) // html body
+// This is your API key that you retrieve from www.mailgun.com/cp (free up to 10K monthly emails)
+    var auth = {
+        auth: {
+            api_key: 'key-7d3e1a0c62fc2084098e00ff32f0c06d',
+            domain: 'sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org'
+        }
     };
 
-    //Invokes the method to send emails given the above data with the helper library
-    mailgun.messages().send(data, function (err, body) {
-        //If there is an error, render the error page
+    var nodemailerMailgun = nodemailer.createTransport(mg(auth));
+
+    nodemailerMailgun.sendMail({
+        from: ES.sender,
+        to: user.email, // An array if you have multiple recipients.
+        subject: 'Email validation',
+        text: EM.composeEmailAccountValidation(user) // html body
+    }, function (err, info) {
         if (err) {
-            //res.render('error', { error : err});
-            logger.error("got an error: ", err);
-            return callback(err);
+            logger.error("got an error: "+err.message);
+            callback(err);
         }
-        //Else we can greet    and leave
         else {
-            logger.debug('Message sent' + JSON.stringify(body) + ' to mail:' + user.email);
-            callback(null, user.email);
+            logger.debug('Message sent to mail:' + user.email);
+            logger.info('Response: ' + info);
+            callback();
         }
     });
 };
 
 EM.dispatchResetPasswordLink = function (user, token, callback) {
-    //We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
-    var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
-
-    // send mail
-    var data = {
-        //Specify email data
-        from: ES.sender,
-        //The email to contact
-        to: user.email,
-        //Subject and text data
-        subject: 'Password recovery',
-        html: EM.composeEmailResetPassword(user, token) // html body
+// This is your API key that you retrieve from www.mailgun.com/cp (free up to 10K monthly emails)
+    var auth = {
+        auth: {
+            api_key: 'key-7d3e1a0c62fc2084098e00ff32f0c06d',
+            domain: 'sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org'
+        }
     };
 
-    //Invokes the method to send emails given the above data with the helper library
-    mailgun.messages().send(data, function (err, body) {
-        //If there is an error, render the error page
+    var nodemailerMailgun = nodemailer.createTransport(mg(auth));
+
+    nodemailerMailgun.sendMail({
+        from: ES.sender,
+        to: user.email, // An array if you have multiple recipients.
+        subject: 'Password recovery',
+        text: EM.composeEmailResetPassword(user, token), // html body
+    }, function (err, info) {
         if (err) {
-            //res.render('error', { error : err});
-            logger.error("got an error: ", err);
-            return callback(err);
+            logger.error("got an error: "+err.message);
+            callback(err);
         }
-        //Else we can greet    and leave
         else {
-            logger.debug('Message sent' + JSON.stringify(body) + ' to mail:' + user.email);
-            callback(null);
+            logger.debug('Message sent to mail:' + user.email);
+            logger.info('Response: ' + info);
+            callback();
         }
     });
 };
 
 EM.dispatchResetPasswordConfirmation = function (user, callback) {
-    //We pass the api_key and domain to the wrapper, or it won't be able to identify + send emails
-    var mailgun = new Mailgun(ES.mailgun.apiKey, ES.mailgun.apiKey);
-
-    // send mail
-    var data = {
-        //Specify email data
-        from: ES.sender,
-        //The email to contact
-        to: user.email,
-        //Subject and text data
-        subject: 'Password reset confirmation',
-        html: EM.composeEmailResetPasswordConfirmation(user) // html body
+    // This is your API key that you retrieve from www.mailgun.com/cp (free up to 10K monthly emails)
+    var auth = {
+        auth: {
+            api_key: 'key-7d3e1a0c62fc2084098e00ff32f0c06d',
+            domain: 'sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org'
+        }
     };
 
-    //Invokes the method to send emails given the above data with the helper library
-    mailgun.messages().send(data, function (err, body) {
-        //If there is an error, render the error page
+    var nodemailerMailgun = nodemailer.createTransport(mg(auth));
+
+    nodemailerMailgun.sendMail({
+        from: ES.sender,
+        to: user.email, // An array if you have multiple recipients.
+        subject: 'Password reset confirmation',
+        text: EM.composeEmailResetPasswordConfirmation(user) // html body
+    }, function (err, info) {
         if (err) {
-            //res.render('error', { error : err});
-            logger.error("got an error: ", err);
-            return callback(err);
+            logger.error("got an error: "+err.message);
+            callback(err);
         }
-        //Else we can greet    and leave
         else {
-            logger.debug('Message sent' + JSON.stringify(body) + ' to mail:' + user.email);
-            callback(null);
+            logger.debug('Message sent to mail:' + user.email);
+            logger.info('Response: ' + info);
+            callback();
         }
     });
 };

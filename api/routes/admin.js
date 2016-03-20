@@ -7,7 +7,8 @@ var mongoose = require('mongoose'),
     Order = mongoose.model('Order');
 var Cookies = require("cookies");
 var utils = require("../Utils/securityUtils.js");
-var config = require('../config.json');
+var config = require('../config.json'),
+    logger = require('log4js').getLogger('controller.admin');
 var jwt = require('jsonwebtoken');
 
 /* GET admin home page. */
@@ -22,16 +23,24 @@ router.get('/users', function (req, res) {
 
         var token = new Cookies(req, res).get('access_token');
         var user = jwt.decode(token, config.secret);
-        console.log(usersRet);
-        res.render('Administration/back-users', {users: usersRet, currentUser: user});
+        logger.debug('Current User :'+user._doc);
+        res.render('Administration/back-users', {users: usersRet, currentUser: user._doc});
     });
     //res.write('hello');
 });
 
 /* GET admin users page. */
-router.get('/users/delete/:value', function (req, res) {
+router.get('/users/deactivate/:value', function (req, res) {
     console.log(req.params.value);
-    User.remove({_id: req.params.value}).exec(function (err, user) {
+    User.findOneAndUpdate({_id: req.params.value},{$set:{active: false}}).exec(function (err, user) {
+        if (err) throw err;
+        res.redirect('/api/admin/users');
+    });
+});
+
+router.get('/users/activate/:value', function (req, res) {
+    console.log(req.params.value);
+    User.findOneAndUpdate({_id: req.params.value},{$set:{active: true}}).exec(function (err, user) {
         if (err) throw err;
         res.redirect('/api/admin/users');
     });
@@ -77,7 +86,7 @@ router.get('/orders', function (req, res) {
 
             Pizza.find().exec(function (err, pizzas) {
                 //res.json(pizzas);
-                res.render('Administration/back-orders', {orders: orders, users: users, pizzas: pizzas});
+                res.render('Administration/back-dashboard-session', {orders: orders, users: users, pizzas: pizzas});
             });
         });
     });
@@ -86,7 +95,7 @@ router.get('/orders', function (req, res) {
 /* GET admin orders page. */
 router.post('/orders/:orderId', function (req, res) {
     Order.find().exec(function (err, orders) {
-        res.render('Administration/back-orders', orders);
+        res.render('Administration/back-dashboard-session', orders);
     });
     //res.write('hello');
 });

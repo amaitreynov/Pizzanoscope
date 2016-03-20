@@ -12,10 +12,22 @@ var config = require('../config.json'),
 var jwt = require('jsonwebtoken');
 
 /* GET admin home page. */
+/* GET dashboard session page */
 router.get('/', function (req, res) {
-    res.redirect('/api/admin/orders');
-});
+    Order.find().exec(function (err, orders) {
+        if (err) console.log(err);
 
+        User.find().exec(function (err, users) {
+            if (err) console.log(err);
+
+            Pizza.find().exec(function (err, pizzas) {
+                //res.json(pizzas);
+                res.render('Administration/back-dashboard-session', {orders: orders, users: users, pizzas: pizzas});
+            });
+        });
+    });
+});
+/** USERS **/
 /* GET admin users page. */
 router.get('/users', function (req, res) {
     User.find().exec(function (err, usersRet) {
@@ -29,7 +41,6 @@ router.get('/users', function (req, res) {
     //res.write('hello');
 });
 
-/* GET admin users page. */
 router.get('/users/deactivate/:value', function (req, res) {
     console.log(req.params.value);
     User.findOneAndUpdate({_id: req.params.value},{$set:{active: false}}).exec(function (err, user) {
@@ -73,31 +84,31 @@ router.post('/users/updUser', function (req, res, next) {
     });
 });
 
-/* GET admin orders page. */
-//TODO get the pizzas and user related to the order
-//create an object and push it in, then send all this to swig
-//eviter de recup la base entière :)
-router.get('/orders', function (req, res) {
+/** SESSION **/
+/* GET live session  */
+router.get('/session/live', function (req, res) {
     Order.find().exec(function (err, orders) {
-        if (err) console.log(err);
-
-        User.find().exec(function (err, users) {
-            if (err) console.log(err);
-
-            Pizza.find().exec(function (err, pizzas) {
-                //res.json(pizzas);
-                res.render('Administration/back-dashboard-session', {orders: orders, users: users, pizzas: pizzas});
-            });
-        });
-    });
-});
-
-/* GET admin orders page. */
-router.post('/orders/:orderId', function (req, res) {
-    Order.find().exec(function (err, orders) {
-        res.render('Administration/back-dashboard-session', orders);
+        res.render('Administration/back-live-session', orders);
     });
     //res.write('hello');
 });
+
+/* GET all the history */
+router.get('/session/history', function (req, res) {
+    Order.find().exec(function (err, orders) {
+        res.render('Administration/back-history-session', orders);
+    });
+    //res.write('hello');
+});
+/* GET the details of an old session */
+router.get('/session/history/:sessionId', function (req, res) {
+    Order.find().exec(function (err, orders) {
+        res.render('Administration/back-history-session', orders);
+    });
+    //res.write('hello');
+});
+
+
+
 
 module.exports = router;

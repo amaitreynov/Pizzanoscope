@@ -85,7 +85,7 @@ module.exports.createOrder = function (user, pizzaList, next) {
     var order = new Order({
         "pizzaList": [pizzaList],
         "user": user,
-        "state": "toBePaid",
+        "state": "TOBEPAID",
         "paymentType": "PayPal"
     });
 

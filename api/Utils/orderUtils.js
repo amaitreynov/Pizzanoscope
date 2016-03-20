@@ -11,11 +11,12 @@ var Pizza = mongoose.model('Pizza');
 var User = mongoose.model('User');
 var Class = mongoose.model('Class');
 
-module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, cb) {
-    logger.info('adding the pizza '+JSON.parse(pizzaToAdd)+' to pizzaList of order '+JSON.stringify(orderToUpdate));
+module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, next) {
+    logger.info('adding the pizza '+JSON.stringify(pizzaToAdd)+' to pizzaList of order '+JSON.stringify(orderToUpdate));
 
     var pizzaListTemp = orderToUpdate.pizzaList;
-    pizzaListTemp.push(pizzaToAdd);
+    pizzaListTemp.push(pizzaToAdd._id);
+    logger.debug('pizzalistTemp: '+pizzaListTemp);
     
     Order.findOneAndUpdate(
         {_id: orderToUpdate._id},
@@ -26,14 +27,14 @@ module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, c
         {new: true},
         function (err, orderUpdated) {
             if (err) {
-                return cb(err, null);
+                return next(err, null);
             }
             if (_.isNull(orderUpdated) || _.isEmpty(orderUpdated)) {
                 return next({error: 'Bad object from DB for pizza'}, null);
             }
             else {
                 logger.debug('Updated order:' + orderUpdated);
-                return cb(null, orderUpdated);
+                return next(null, orderUpdated);
             }
         });
 };
@@ -102,31 +103,6 @@ module.exports.createOrder = function (user, pizzaList, next) {
         }
     });
 };
-
-module.exports.createEmptyOrder = function (user, next) {
-    logger.info('Creating empty order for user: '+JSON.stringify(user));
-    //create order
-    var order = new Order({
-        "pizzaList": [],
-        "user": user._id,
-        "state": "toBePaid",
-        "paymentType": "PayPal"
-    });
-
-    order.save(function (err, savedOrder) {
-        if (err)
-            return next(err, null);
-
-        if (_.isNull(savedOrder) || _.isEmpty(savedOrder)) {
-            return next({error: 'Bad object from DB for order'}, null);
-        }
-        else {
-            logger.debug('Created order:' + savedOrder);
-            return next(null, savedOrder);
-        }
-    });
-};
-
 
 //TODO add error in callback return if error happens
 module.exports.deletePizzaIntoOrder = function (pizza, orderToUpdate, next) {

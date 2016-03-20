@@ -7,6 +7,7 @@ var Cookies = require("cookies");
 var logger = require('log4js').getLogger('controller.product');
 var config = require('../config.json');
 var jwt = require('jsonwebtoken');
+var cookieParser = require('cookie-parser');
 
 var OrderDB = require('../Models/OrderDB');
 var Order = mongoose.model('Order');
@@ -17,7 +18,9 @@ var Class = mongoose.model('Class');
 /* GET home page. */
 router.get('/getAll', function (req, res) {
     //todo add some ajax to give user feedback while loading the pizzas ?
-        var orderCookie = new Cookies(req, res).get('order');
+        //var orderCookie = new Cookies(req, res).get('order');
+        var orderCookie = req.cookies.OrderCookie;
+        logger.debug('OrderCookie :'+JSON.stringify(req.cookies.OrderCookie));
         var optionsget = {
             host: 'services.dominos.com.au',
             path: '/Rest/fr/menus/31740/products',
@@ -26,13 +29,13 @@ router.get('/getAll', function (req, res) {
         var getData = https.request(optionsget, function (data) {
             var body = '';
             data.on('data', function (resx) {
-                logger.debug('pizzas from api:' + JSON.stringify(resx));
+                //logger.debug('pizzas from api:' + JSON.stringify(resx));
                 body += resx;
             });
             data.on('end', function () {
                 logger.info('ending http request');
                 var bodyParsed = JSON.parse(body);
-                logger.debug('pizzas from api:' + JSON.stringify(bodyParsed));
+                //logger.debug('pizzas from api:' + JSON.stringify(bodyParsed));
                 var pizzas = bodyParsed.MenuPages[1].SubMenus;
                 var token = new Cookies(req, res).get('access_token');
                 var user = jwt.decode(token, config.secret);
@@ -44,7 +47,11 @@ router.get('/getAll', function (req, res) {
                 else
                 {
                     res.charset = 'utf-8';
-                    res.render('Pizza/pizza', {menus: pizzas, orderCookies: JSON.parse(orderCookie), user: user._doc});
+                    Order.findById(orderCookie._id).populate('pizzaList').exec(function (err, orderPopulated) {
+                        logger.debug(orderPopulated);
+                        res.render('Pizza/pizza', {menus: pizzas, orderCookies: orderPopulated, user: user._doc});
+                    });
+
                 }
             });
         });

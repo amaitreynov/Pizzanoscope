@@ -25,6 +25,8 @@ var debug = require('debug')('app:' + process.pid),
     jwt = require('jsonwebtoken'),
     config = require('./config.json'),
     bodyParser = require("body-parser"),
+    cookieParser = require('cookie-parser'),
+    expressSession = require('express-session'),
     Cookies = require("cookies");
 
 
@@ -56,6 +58,8 @@ mongoose.connection.once('open', function callback() {
 logger.info("-- Initializing express --");
 var express = require('express'), app = express();
 app.locals.moment = require('moment');
+// Cookies
+app.use(cookieParser());
 
 logger.info("-- Initializing Swig --");
 var swig = require('swig');

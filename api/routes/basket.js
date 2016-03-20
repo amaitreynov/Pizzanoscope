@@ -12,23 +12,20 @@ var logger = require('log4js').getLogger('controller.basket');
 var utils = require("../Utils/securityUtils.js");
 var config = require('../config.json');
 var jwt = require('jsonwebtoken');
-
+var _ = require('lodash');
 
 var Order = mongoose.model('Order');
 var Pizza = mongoose.model('Pizza');
 var User = mongoose.model('User');
 var Class = mongoose.model('Class');
 
-
-
-router.get('/del/:value1', function(req, res) {
+router.get('/del/:value1', function (req, res) {
     var UpdateOrderToDelete = JSON.parse(new Cookies(req, res).get("order"));
 
     logger.info(UpdateOrderToDelete.pizzaList.length);
-    if(UpdateOrderToDelete.pizzaList.length == 1)
-        res.redirect('/api/basket/cleanBasket/'+UpdateOrderToDelete._id);
-    else
-    {
+    if (UpdateOrderToDelete.pizzaList.length == 1)
+        res.redirect('/api/basket/cleanBasket/' + UpdateOrderToDelete._id);
+    else {
         // TODO: value1 seems to be unused, check var
         Pizza.findOne({_id: req.params.value1}, function (err, returnedPizza) {
             if (err) logger.error(err.message);
@@ -36,13 +33,17 @@ router.get('/del/:value1', function(req, res) {
             UpdateOrderToDelete = UtilsOrder.deletePizzaIntoOrder(returnedPizza, UpdateOrderToDelete, function (orderToUpdate) {
                 //logger.info("Order to push into cookie:" + JSON.stringify(orderToUpdate._id));
                 Pizza.remove({_id: returnedPizza._id}, function (err) {
-                    if (err) logger.error(err.message);
-                    new Cookies(req, res).set('order', JSON.stringify(orderToUpdate), {
-                        httpOnly: true,
-                        secure: false      // for your dev environment => true for prod
-                    });
-                    // TODO: Exception may happen
-                    res.redirect('/api/product/getAll');
+                    if (err) {
+                        logger.error(err.message);
+                    }
+                    else {
+                        new Cookies(req, res).set('order', JSON.stringify(orderToUpdate), {
+                            httpOnly: true,
+                            secure: false      // for your dev environment => true for prod
+                        });
+                        // TODO: Exception may happen
+                        res.redirect('/api/product/getAll');
+                    }
                 });
             });
         });
@@ -50,18 +51,17 @@ router.get('/del/:value1', function(req, res) {
 });
 
 /*
-router.get('/cleanBasket', function(req, res) {
-    res.clearCookie('order');
-    res.redirect('/api/product/getAll');
-});*/
+ router.get('/cleanBasket', function(req, res) {
+ res.clearCookie('order');
+ res.redirect('/api/product/getAll');
+ });*/
 
-router.get('/cleanBasket/:value1', function(req, res) {
-logger.debug('value1 value:'+req.params.value1);
-    Order.findOne({_id: req.params.value1}, function(err,order) {
-        if(err) logger.error(err.message);
+router.get('/cleanBasket/:value1', function (req, res) {
+    logger.debug('value1 value:' + req.params.value1);
+    Order.findOne({_id: req.params.value1}, function (err, order) {
+        if (err) logger.error(err.message);
 
-
-        if(order.pizzaList == undefined || order.pizzaList == null) {
+        if (order.pizzaList == undefined || order.pizzaList == null) {
             order.pizzaList.forEach(function (item) {
                 Pizza.remove({_id: item}, function (err) {
                     if (err) logger.error(err.message);
@@ -78,72 +78,86 @@ logger.debug('value1 value:'+req.params.value1);
     res.redirect('/api/product/getAll');
 });
 
-router.get('/addPizza/name/:value1/price/:value2', function(req, res) {
-    var cookieJson = new Cookies(req, res).get("order");
-
-    var firstPizza = new Pizza({
-        name: req.params.value1,
-        description: "Description Pizza",
-        price: req.params.value2.substr(0,2),
-        sizeType: "Large",
-        doughType: "Classic"
-    });
-
-    var pizzaToAdd = new Pizza({
-        name: req.params.value1,
-        description: "Description Pizza",
-        price: req.params.value2.substr(0,2),
-        sizeType: "Large",
-        doughType: "Classic"
-    });
-
-    if(cookieJson == undefined || cookieJson == null) {
-        //logger.info('----------------createdOrder------------');
+router.get('/addPizza/name/:value1/price/:value2', function (req, res) {
+    var orderCookie = new Cookies(req, res).get("order");
+    logger.debug('order cookie:' + orderCookie);
+    /*if order is not created:
+     -create a new pizza
+     -create a new order with previously created pizza
+     -replace cookie with created order
+     */
+    //order cookie isn't present
+    if (!orderCookie || _.isNull(orderCookie)) {
+        logger.info('----------------No order cookie present------------');
         var token = new Cookies(req, res).get('access_token');
         var user = jwt.decode(token, config.secret);
 
-        firstPizza.save();
-        //IF order is not create, create a new order
-        var orderToInsert = new Order({
-            "pizzaList": [firstPizza],
-            "user": user,
-            "state": "toBePaid",
-            "paymentType": "PayPal"
-        });
+        //create new pizza
+        UtilsOrder.createPizza(req, function (err, createdPizza) {
+            if (err) {
+                logger.error(err.message);
+            }
+            else {
+                logger.debug('Created pizza: ' + JSON.stringify(createdPizza));
 
-        orderToInsert.save();
-        Order.findOne({_id: orderToInsert._id}).populate("user").exec(function(err) {
-            if(err) logger.error(err.message); else logger.info('Populate Profile;');
-        });
-        Order.findOne({_id: orderToInsert._id}).populate("pizzaList").exec(function(err) {
-            if(err) logger.error(err.message); else logger.info('Populate Pizza');
-        });
-        //logger.info('----------------createdOrder1------------');
+                //create new order with previously created pizza
+                UtilsOrder.createOrder(user._doc, createdPizza._id, function (err, createdOrder) {
+                    if (err)
+                        throw (err.message);
+                    //TODO handle with a message in view instead of status
+                    if (_.isNull(createdOrder) || _.isEmpty(createdOrder)) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(404).json(JSON.stringify({error: "Couldn't create order"}, null, 2));
+                    }
+                    else {
+                        logger.debug('Created order: ' + JSON.stringify(createdOrder));
+                        new Cookies(req, res).set('order', JSON.stringify(createdOrder), {
+                            httpOnly: true,
+                            secure: false      // for your dev environment => true for prod
+                        });
 
-        new Cookies(req, res).set('order', JSON.stringify(orderToInsert), {
-            httpOnly: true,
-            secure: false      // for your dev environment => true for prod
+                        return res.redirect('/api/product/getAll');
+                    }
+                });
+            }
         });
-
-        return res.redirect('/api/product/getAll');
     }
-    else
-    {
-        //logger.info('------------insert Pizza----------------');
-        //Ajout de la pizza
-        pizzaToAdd.save();
-        var UpdatedOrder = UtilsOrder.addPizzaIntoOrder(pizzaToAdd, JSON.parse(new Cookies(req, res).get("order")));
-        Order.findOne({_id: UpdatedOrder._id}).populate("pizzaList").exec(function(err) {
-            if(err) logger.error(err.message); else logger.info('Populate Pizza');
+    else {//order cookie is present
+        logger.debug('----------------Order cookie present------------');
+        /*if order already created:
+         -create a new pizza
+         -add pizza to order
+         -replace cookie with updated order
+         */
+        //create new pizza
+        UtilsOrder.createPizza(req, function (err, createdPizza) {
+            if (err) {
+                logger.error(err.message);
+            }
+            else {
+                //add pizza in pizzaList of order from cookie
+                // logger.info('order id ' + JSON.parse(new Cookies(req, res).get("order")));
+                UtilsOrder.addPizzaInOrderPizzaList(createdPizza, JSON.parse(new Cookies(req, res).get("order")), function (err, updatedOrder) {
+                    if (err)
+                        logger.error(err.message);
+                    //TODO handle with a message in view instead of status
+                    if (_.isNull(updatedOrder) || _.isEmpty(updatedOrder)) {
+                        res.set('Content-Type', 'application/json');
+                        res.status(404).json(JSON.stringify({error: "Couldn't update pizzaList"}, null, 2));
+                    }
+                    else {
+                        logger.debug('Updated order returned: ' + JSON.stringify(updatedOrder));
+                        new Cookies(req, res).set('order', JSON.stringify(updatedOrder), {
+                            httpOnly: true,
+                            secure: false      // for your dev environment => true for prod
+                        });
+
+                        return res.redirect('/api/product/getAll');
+                    }
+                });
+            }
         });
-        //logger.info('------------insert Pizza1----------------');
-        new Cookies(req, res).set('order', JSON.stringify(UpdatedOrder), {
-            httpOnly: true,
-            secure: false      // for your dev environment => true for prod
-        });
-        return res.redirect('/api/product/getAll');
     }
 });
-
 
 module.exports = router;

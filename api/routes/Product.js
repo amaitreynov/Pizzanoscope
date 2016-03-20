@@ -26,18 +26,26 @@ router.get('/getAll', function (req, res) {
         var getData = https.request(optionsget, function (data) {
             var body = '';
             data.on('data', function (resx) {
+                logger.debug('pizzas from api:' + JSON.stringify(resx));
                 body += resx;
             });
             data.on('end', function () {
                 logger.info('ending http request');
                 var bodyParsed = JSON.parse(body);
+                logger.debug('pizzas from api:' + JSON.stringify(bodyParsed));
                 var pizzas = bodyParsed.MenuPages[1].SubMenus;
                 var token = new Cookies(req, res).get('access_token');
                 var user = jwt.decode(token, config.secret);
-                if(orderCookie == undefined || orderCookie == null)
-                    res.render('Pizza/pizza', {menus: pizzas, orderCookies: "", user: user});
+                logger.debug('user from token:' + JSON.stringify(user._doc));
+                if(orderCookie == undefined || orderCookie == null) {
+                    res.charset = 'utf-8';
+                    res.render('Pizza/pizza', {menus: pizzas, orderCookies: "", user: user._doc});
+                }
                 else
-                    res.render('Pizza/pizza', {menus: pizzas, orderCookies: JSON.parse(orderCookie), user: user});
+                {
+                    res.charset = 'utf-8';
+                    res.render('Pizza/pizza', {menus: pizzas, orderCookies: JSON.parse(orderCookie), user: user._doc});
+                }
             });
         });
 

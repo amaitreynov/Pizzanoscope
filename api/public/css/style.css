@@ -4882,7 +4882,7 @@ dd {
 .ht-widget.hw-posts-tab .nav-tab li {
   display: block;
   float: left;
-  width: 33.33334%;
+  /*width: 33.33334%;*/
 }
 .ht-widget.hw-posts-tab .nav-tab a {
   display: block;

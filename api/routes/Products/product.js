@@ -38,7 +38,7 @@ router.get('/getAll', function (req, res) {
             var pizzas = bodyParsed.MenuPages[1].SubMenus;
             var token = new Cookies(req, res).get('access_token');
             var user = jwt.decode(token, config.secret);
-            logger.debug('user from token:' + JSON.stringify(user._doc));
+            // logger.debug('user from token:' + JSON.stringify(user._doc));
             //no orderCookie provided, nothing in basket
             if (!orderCookie || _.isNull(orderCookie)) {
                 res.charset = 'utf-8';
@@ -47,7 +47,7 @@ router.get('/getAll', function (req, res) {
             else {//orderCookie provided, providing pizzas details from it
                 res.charset = 'utf-8';
                 Order.findById(orderCookie._id).populate('pizzaList').exec(function (err, orderPopulated) {
-                    logger.debug(orderPopulated);
+                    // logger.debug('Populated order '+orderPopulated);
                     res.render('Pizza/pizza', {menus: pizzas, orderCookies: orderPopulated, user: user._doc});
                 });
 

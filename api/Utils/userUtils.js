@@ -12,12 +12,12 @@ var debug = require('debug')('app:utils:' + process.pid),
     User = require('../models/UserDB'),
     User = mongoose.model('User'),
     securityUtil = require('./securityUtils'),
+    orderUtils = require('./orderUtils'),
     UnauthorizedAccessError = require('../errors/UnauthorizedAccessError.js'),
     logger = require('log4js').getLogger('utils.user'),
     NotFoundError = require('../errors/NotFoundError.js');
 
 module.exports.authenticate = function (req, res, next) {
-
     logger.info("Processing authenticate middleware");
 
     var email = req.body.email,
@@ -70,5 +70,32 @@ module.exports.authenticate = function (req, res, next) {
     });
 };
 
+module.exports.logout = function (req, res) {
+    logger.info("Processing logout middleware");
+    var orderToDelete = req.cookies.OrderCookie;
+
+    //check if orderCookie is present
+    if (!_.isEmpty(orderToDelete) && !_.isNull(orderToDelete)) {
+        logger.debug('Order present, going to delete it');
+        //then first delete the order and clear OrderCookie
+        orderUtils.deleteOrder(orderToDelete, function (err) {
+            if (err) {
+                logger.error(err.message);
+                throw err.message;
+            }
+            else {
+                logger.debug('Order deleted, clearing cookie');
+                res.clearCookie('OrderCookie');
+                res.clearCookie('access_token');
+                res.redirect('/api/login');
+            }
+        });
+    }
+    else {
+        //clear access_token cookie and redirect to login page
+        res.clearCookie('access_token');
+        res.redirect('/api/login');
+    }
+};
 
 

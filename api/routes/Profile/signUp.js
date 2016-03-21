@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var mongoose = require("mongoose");
-var User = mongoose.model("User"),
+var express = require('express'),
+    router = express.Router(),
+    mongoose = require("mongoose"),
+    User = mongoose.model("User"),
+    Class = mongoose.model("Class"),
     _ = require('lodash'),
     logger = require('log4js').getLogger('controller.signup'),
     emailUtils = require('../../Utils/emailUtils');
-var Class = mongoose.model("Class");
 
 router.get(('/'), function (req, res) {
     res.render('SignUp/signUp', {title: 'S\'inscrire'});

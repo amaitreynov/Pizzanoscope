@@ -45,11 +45,11 @@ module.exports.authenticate = function (req, res, next) {
 
                     securityUtil.createToken(user, function (token, err) {
                         if (err)
-                            logger.info(err.message);
+                            logger.error(err.message);
 
                         securityUtil.createCookie(token, req, res, function (err) {
                             if (err)
-                                logger.info(err.message);
+                                logger.error(err.message);
 
                             res.redirect('/api/product/getAll');
                         });

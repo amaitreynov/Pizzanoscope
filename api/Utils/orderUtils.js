@@ -76,7 +76,7 @@ module.exports.createPizza = function (req, next) {
             return next({error: 'Bad object from DB for pizza'}, null);
         }
         else {
-            logger.debug('Created pizza:' + savedPizza);
+            // logger.debug('Created pizza:' + savedPizza);
             return next(null, savedPizza);
         }
     });
@@ -143,5 +143,37 @@ module.exports.deletePizzaIntoOrder = function (pizza, orderToUpdate, next) {
                         return next(null, orderFinded);
                     }
                 });
+        });
+};
+
+module.exports.deleteOrderOnLogout = function (req, res) {
+    var orderToDelete = req.cookies.OrderCookie;
+    logger.debug('Logging out... ');
+    logger.debug('Deleting order ' + orderToDelete._id + ' first... ');
+    //find the order to delete
+    Order.findOne({_id: orderToDelete._id},
+        function (err, order) {
+            if (err) logger.error('Error while finding order ' + err.message);
+            else {
+                // logger.debug('orderToRemove :' + order);
+                //delete the order 1st
+                Order.remove({_id: orderToDelete._id},
+                    function (err, orderRemoved) {
+                        if (err) logger.error(err.message);
+                        else {
+                            // logger.debug('Number of rows affected :' + orderRemoved);
+                            //then the pizzas in order
+                            order.pizzaList.forEach(function (item) {
+                                Pizza.remove({_id: item}, function (err, pizzaRemoved) {
+                                    if (err) logger.error(err.message);
+                                    // logger.debug('Removed pizza :' + pizzaRemoved);
+                                });
+                            });
+                            res.clearCookie('access_token');
+                            res.clearCookie('OrderCookie');
+                            res.redirect('/api/login');
+                        }
+                    });
+            }
         });
 };

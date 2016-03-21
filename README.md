@@ -11,8 +11,8 @@ Page interne sécurisée
 	- Affichage de l'utilisateur courrant _|
 	- Profil de l'utilisateur :
 		nom / prenom / pseudo / email (inchangé) / promotion _|
-		campus / avatar / adress (facultatif) / téléphone (facultatif) _|
-		lien fb .... 
+		campus / avatar / address (facultatif) / phone (facultatif) _|
+		lien fb ....
 
 	- Pizzanoscope :
 		afficher toutes les images de tous les pizzas
@@ -21,7 +21,7 @@ Page interne sécurisée
 
 
 V2 pour le BDE
-    - Chat
+    - Chat :
 		nom d'utilisateur
 		service de chan différents (socket io)
 		afficher des images

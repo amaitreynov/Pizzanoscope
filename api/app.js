@@ -8,27 +8,25 @@ var debug = require('debug')('app:' + process.pid),
     http_port = process.env.HTTP_PORT || 3000,
     https_port = process.env.HTTPS_PORT || 3443,
     mongoose_uri = process.env.MONGOOSE_URI || "mongodb://root:root@ds057934.mongolab.com:57934/pizzanoscope",
-//mongoose_uri = process.env.MONGOOSE_URI || "mongodb://localhost:27017/pizzaNoScope",
-    onFinished = require('on-finished'),
+    //mongoose_uri = process.env.MONGOOSE_URI || "mongodb://localhost:27017/pizzaNoScope",
     NotFoundError = require(path.join(__dirname, "errors", "NotFoundError.js")),
-    profile = require('./routes/profile'),
-    signUp = require('./routes/signUp'),
-    product = require('./routes/product'),
-    basket = require('./routes/basket'),
-    orders = require('./routes/orders'),
-    default_r = require('./routes/default'),
-    admin = require('./routes/admin'),
-    validate = require('./routes/validate'),
-    forgotPassword = require('./routes/forgot'),
-    resetPassword = require('./routes/reset'),
-    utils = require("./Utils/securityUtils.js"),
-    jwt = require('jsonwebtoken'),
     config = require('./config.json'),
     bodyParser = require("body-parser"),
     cookieParser = require('cookie-parser'),
-    expressSession = require('express-session'),
-    Cookies = require("cookies");
+    TokenHandler = require('./Utils/securityUtils');
 
+
+/****** Import ROUTES ******/
+var profile = require('./routes/Profile/profile'),
+    signUp = require('./routes/Profile/signUp'),
+    product = require('./routes/Products/product'),
+    basket = require('./routes/Basket/basket'),
+    orders = require('./routes/Basket/orders'),
+    default_r = require('./routes/Security/default'),
+    admin = require('./routes/Administration/admin'),
+    validate = require('./routes/Profile/validate'),
+    forgotPassword = require('./routes/Profile/forgot'),
+    resetPassword = require('./routes/Profile/reset');
 
 
 var logger = configureLogging();
@@ -82,53 +80,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(require('compression')());
 app.use(require('response-time')());
 
-/*app.use(function (req, res, next) {
-
- onFinished(res, function (err) {
- logger.info("[%s] finished request", req.connection.remoteAddress);
- });
-
- next();
-
- });*/
-
-//ROUTING
-//MIDDLEWARE
-app.use(function (req, res, next) {
-    var token = new Cookies(req, res).get('access_token');
-
-    logger.info('-- EVALUATING CONNECTION --');
-    if (utils.isDisconnectedLink(req.url)) {
-        logger.info('-- NO CONNECTION REQUIRED -- Letting go...');
-        next();
-    } else {
-        if (token) {
-            jwt.verify(token, config.secret, function (err, decoded) {
-                logger.info('-- CONNECTION REQUIRED -- TEST');
-                if (err) {
-                    logger.error('Error while decoding token:' + err.message);
-                    res.redirect('/');
-                }
-                else {
-                    logger.info('-- CONNECTION REQUIRED & ADMIN -- Evaluating admin permission');
-                    if (utils.isAdminRequiredLink(req.url) && decoded.admin == false) {
-                        logger.info('-- CONNECTION REQUIRED & ADMIN -- Couldn\'t get admin permission');
-                        res.redirect('/');
-                    }
-                    else {
-                        logger.info('-- CONNECTION REQUIRED -- No admin required, letting go...');
-                        next();
-                    }
-                }
-            });
-        } else {
-            //no token provided
-            logger.info('-- CONNECTION REQUIRED -- No token provided, redirecting...');
-            res.redirect('/');
-        }
-    }
+logger.info("-- Using token handler --");
+app.use(function(req, res, next){
+    TokenHandler.handleToken(req, res, next);
 });
 
+//ROUTING MIDDLEWARE
 app.use("/", default_r);
 app.use("/api", default_r);
 app.use("/api/profile", profile);
@@ -142,7 +99,7 @@ app.use('/api/forgot', forgotPassword);
 app.use('/api/reset', resetPassword);
 
 
-// todo all other requests redirect to 404
+// TODO all other requests redirect to 404 page (currently sending a not found json :-( )
 app.all("*", function (req, res, next) {
     next(new NotFoundError("404"));
 });

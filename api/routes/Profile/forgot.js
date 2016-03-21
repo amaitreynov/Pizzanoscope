@@ -9,7 +9,7 @@ var express = require('express'),
     logger = require('log4js').getLogger('controller.forgotpassword'),
     async = require('async'),
     crypto = require('crypto'),
-    emailUtils = require('../Utils/emailUtils');
+    emailUtils = require('../../Utils/emailUtils');
 
 router.get('/', function (req, res) {
     res.render('login/forgotPassword', {title: 'Mot de passe oublié'});

@@ -5,22 +5,21 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require("mongoose");
 var User = mongoose.model("User"),
-    _ = require('lodash'),
     logger = require('log4js').getLogger('controller.validate'),
     Mailgun = require('mailgun-js'),
-    emailUtils = require('../Utils/emailUtils');
+    emailUtils = require('../../Utils/emailUtils');
 
 //todo move part of this controller in a sub function in userUtils
 router.get("/:mail", function (req, res) {
-    logger.info('Verifying email....');
-    logger.debug('email:' + req.params.mail);
+    logger.info('Verifying email '+req.params.mail);
+    // logger.debug('email:' + req.params.mail);
     var registerErr = null;
     //logger.debug('token:'+securityUtils.getPathParams(req)[3]);
 
     User.findOne({email: req.params.mail}, function (err, user) {
         if (err) throw err;
         else {
-            //un user existe avec cet email
+            //check if a user with the provided email is in DB
             if (user) {
                 var mailgun = new Mailgun({
                     apiKey: 'key-7d3e1a0c62fc2084098e00ff32f0c06d',
@@ -32,7 +31,8 @@ router.get("/:mail", function (req, res) {
                         address: req.params.mail
                     }
                 ];
-                //For the sake of this tutorial you need to create a mailing list on Mailgun.com/cp/lists and put its address below
+                //create a mailing list on Mailgun.com/cp/lists and put its address below
+                //add email to validated emails list
                 mailgun.lists('accountvalidation@sandboxfc7fd911df6643e88fd945a63667ccb9.mailgun.org').members().add({
                     members: members,
                     subscribed: true
@@ -63,7 +63,7 @@ router.get("/:mail", function (req, res) {
                     }
                 });
             }
-            //user avec cet email inexistant
+            //no user found in the DB with this email, aborting
             else {
                 registerErr = "Il n'y a pas d'utilisateur avec cet email !";
                 logger.error(registerErr);

@@ -7,9 +7,9 @@ var express = require('express'),
     User = mongoose.model("User"),
     _ = require('lodash'),
     logger = require('log4js').getLogger('controller.resetpassword'),
-    securityUtil = require('../Utils/securityUtils'),
+    securityUtil = require('../../Utils/securityUtils'),
     async = require('async'),
-    emailUtils = require('../Utils/emailUtils');
+    emailUtils = require('../../Utils/emailUtils');
 
 router.get('/:token', function (req, res) {
     User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}}, function (err, user) {

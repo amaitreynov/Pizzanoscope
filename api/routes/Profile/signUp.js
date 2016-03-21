@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 var User = mongoose.model("User"),
     _ = require('lodash'),
     logger = require('log4js').getLogger('controller.signup'),
-    emailUtils = require('../Utils/emailUtils');
+    emailUtils = require('../../Utils/emailUtils');
 var Class = mongoose.model("Class");
 
 router.get(('/'), function (req, res) {
@@ -131,7 +131,6 @@ router.post('/addUser', function (req, res) {
             phoneNumber: req.body.phone
         });
     }
-
 });
 
 

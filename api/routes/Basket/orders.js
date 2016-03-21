@@ -4,12 +4,12 @@ var logger = require('log4js').getLogger('controller.orders');
 var router = express.Router();
 var paypal = require('paypal-rest-sdk');
 var Cookies = require("cookies");
-var UtilsOrder = require('../Utils/orderUtils');
+var UtilsOrder = require('../../Utils/orderUtils');
 var Order = mongoose.model('Order');
 var Pizza = mongoose.model('Pizza');
 var User = mongoose.model('User');
 var Class = mongoose.model('Class');
-var config = require('../config.json');
+var config = require('../../config.json');
 var jwt = require('jsonwebtoken');
 
 

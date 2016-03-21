@@ -5,7 +5,6 @@ var config = require('./config'),
     mongoose = require("mongoose"),
     logger = require('log4js').getLogger('controller.utils.sendEmail'),
     ES = config.smtp,
-    Mailgun = require('mailgun-js'),
     securityUtils = require('./securityUtils'),
     EM = {};
 var nodemailer = require('nodemailer');
@@ -35,8 +34,8 @@ EM.dispatchAccountValidationLink = function (user, callback) {
             callback(err);
         }
         else {
-            logger.debug('Message sent to mail:' + user.email);
-            logger.info('Response: ' + info);
+            logger.info('Message successfully sent to mail:' + user.email);
+            // logger.info('Response: ' + info);
             callback();
         }
     });
@@ -57,7 +56,7 @@ EM.dispatchResetPasswordLink = function (user, token, callback) {
         from: ES.sender,
         to: user.email, // An array if you have multiple recipients.
         subject: 'Password recovery',
-        text: EM.composeEmailResetPassword(user, token), // html body
+        text: EM.composeEmailResetPassword(user, token) // html body
     }, function (err, info) {
         if (err) {
             logger.error("got an error: "+err.message);

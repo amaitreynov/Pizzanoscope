@@ -12,17 +12,19 @@ var User = mongoose.model('User');
 var Class = mongoose.model('Class');
 
 module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, next) {
-    logger.info('adding the pizza ' + JSON.stringify(pizzaToAdd) + ' to pizzaList of order ' + JSON.stringify(orderToUpdate));
+    logger.info('adding the pizza ' + JSON.stringify(pizzaToAdd._id) + ' to pizzaList of order ' + JSON.stringify(orderToUpdate._id));
 
     var pizzaListTemp = orderToUpdate.pizzaList;
     pizzaListTemp.push(pizzaToAdd._id);
-    logger.debug('pizzalistTemp: ' + pizzaListTemp);
+    // logger.debug('pizzalistTemp: ' + pizzaListTemp);
 
     Order.findOneAndUpdate(
         {_id: orderToUpdate._id},
         {
-            updated_at: Date.now(),
-            pizzaList: pizzaListTemp
+            $set: {
+                updated_at: Date.now(),
+                pizzaList: pizzaListTemp
+            }
         },
         {new: true},
         function (err, orderUpdated) {
@@ -33,7 +35,7 @@ module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, n
                 return next({error: 'Bad object from DB for pizza'}, null);
             }
             else {
-                logger.debug('Updated order:' + orderUpdated);
+                // logger.debug('Updated order:' + orderUpdated);
                 return next(null, orderUpdated);
             }
         });
@@ -56,7 +58,7 @@ module.exports.getPizzasFromOrder = function (orderId, next) {
 };
 
 module.exports.createPizza = function (req, next) {
-    logger.info('Creating pizza....');
+    logger.info('Creating pizza with name \' ' + sanitizer.escape(req.params.value1) + '\' and price: ' + sanitizer.escape(req.params.value2.substr(0, 2)));
     //create pizza
     var pizza = new Pizza({
         name: sanitizer.escape(req.params.value1),
@@ -98,7 +100,7 @@ module.exports.createOrder = function (user, pizzaList, next) {
             return next({error: 'Bad object from DB for order'}, null);
         }
         else {
-            logger.debug('Created order:' + savedOrder);
+            // logger.debug('Created order:' + savedOrder);
             return next(null, savedOrder);
         }
     });
@@ -106,27 +108,24 @@ module.exports.createOrder = function (user, pizzaList, next) {
 
 //TODO add error in callback return if error happens
 module.exports.deletePizzaIntoOrder = function (pizza, orderToUpdate, next) {
-    logger.info('Deleting pizza from order\'s pizzaList...');
-    logger.debug('pizza to delete received:'+pizza._id);
-    logger.debug('orderToUpdate.pizzaList received' + orderToUpdate.pizzaList);
+    logger.info('Deleting pizza ' + pizza._id + ' from order\'s pizzaList ' + orderToUpdate.pizzaList);
+
     Order.findOne({_id: orderToUpdate._id},
         function (err, orderFinded) {
-
             //TODO catch error in this function if happens
             //logger.debug('Deleting Pizza :'+pizza);
             var pizzaListTemp = orderFinded.pizzaList;
             pizzaListTemp.forEach(function (item) {
-                logger.debug('Item :'+item);
+                // logger.debug('Item :' + item);
                 if (pizza.equals(item)) {
-                    logger.debug('Removed Pizza :'+item);
+                    // logger.debug('Removed Pizza :' + item);
                     pizzaListTemp.splice(pizzaListTemp.indexOf(item), 1);
 
-                    //console.log(PizzaListTemp.indexOf(item));
+                    //logger.debug(PizzaListTemp.indexOf(item));
                 }
                 //logger.debug('Current pizzaList '+pizzaListTemp);
             });
-
-            logger.debug('updated pizzaList to update ' + pizzaListTemp);
+            // logger.debug('updated pizzaList to update ' + pizzaListTemp);
 
             orderFinded.update(
                 {
@@ -144,7 +143,5 @@ module.exports.deletePizzaIntoOrder = function (pizza, orderToUpdate, next) {
                         return next(null, orderFinded);
                     }
                 });
-
         });
-
 };

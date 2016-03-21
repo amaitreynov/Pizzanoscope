@@ -1,13 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose'),
-    UserDB = require('../models/UserDB'),
+    // UserDB = require('../../Models/UserDB'),
     User = mongoose.model('User'),
     Pizza = mongoose.model('Pizza'),
     Order = mongoose.model('Order');
 var Cookies = require("cookies");
-var utils = require("../Utils/securityUtils.js");
-var config = require('../config.json'),
+var utils = require("../../Utils/securityUtils.js");
+var config = require('../../config.json'),
     logger = require('log4js').getLogger('controller.admin');
 var jwt = require('jsonwebtoken');
 

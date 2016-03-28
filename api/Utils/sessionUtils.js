@@ -62,3 +62,34 @@ module.exports.createSession = function (next) {
         }
     });
 };
+
+/*
+ - Action: Creates a new session object in DB
+ - Returns: callback with the created session 
+ error if it's the case or if object from db is null/empty
+ */
+//TODO add parameters needed to create the session
+module.exports.updateSession = function (next) {
+    logger.info('Cerating a new session...');
+    exports.getCurrentSession(function(err, session){
+        
+    });
+    var session = new Session({
+        name: 'session1',
+        startHour: Date.now(),
+        endHour: null,
+        active: true,
+        pizzaPrice: null,
+        providerPrice: null
+    });
+
+    session.save(function (err, sessionCreated) {
+        if (err) {
+            logger.error('Error while creating the ' + err);
+            return next(err, null);
+        }
+        else {
+            return next(null, sessionCreated);
+        }
+    });
+};

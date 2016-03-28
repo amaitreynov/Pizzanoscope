@@ -16,6 +16,7 @@ var Pizza = mongoose.model('Pizza');
 var User = mongoose.model('User');
 var Class = mongoose.model('Class');
 
+//TODO add session update
 router.get('/delelePizza/:value1', function (req, res) {
     var orderToUpdate = req.cookies.OrderCookie;
 
@@ -72,6 +73,7 @@ router.get('/delelePizza/:value1', function (req, res) {
     }
 });
 
+//TODO add session update
 router.get('/cleanBasket/', function (req, res) {
     var orderToDelete = req.cookies.OrderCookie;
     logger.debug('value:' + orderToDelete._id);
@@ -96,6 +98,7 @@ router.get('/cleanBasket/', function (req, res) {
     });
 });
 
+//TODO add session update
 router.get('/addPizza/name/:value1', function (req, res) {
     var orderCookie = req.cookies.OrderCookie;
     logger.debug('order cookie:' + orderCookie);

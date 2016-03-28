@@ -1,107 +1,128 @@
 {% extends "../layout.html" %}
 
-    {% block head %}
-        {% parent %}
-    {% endblock %}
+{% block head %}
+{% parent %}
+{% endblock %}
 
 
-    {% block header %}
-        {% parent %}
-    {% endblock %}
+{% block header %}
+{% parent %}
+{% endblock %}
 
-    {% block heading %}
-            <div class="ht-page-header">
-                <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
-                <div class="container">
-                    <div class="inner">
-                        <h2 class="heading">Pizzanoscope</h2>
-                    </div>
-                </div>
-            </div>
-    {% endblock %}
+{% block heading %}
+<div class="ht-page-header">
+    <div class="overlay" style="background: rgba(0,0,0,.5)"></div>
+    <div class="container">
+        <div class="inner">
+            <h2 class="heading">Pizzanoscope</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-    {% block content %}
-        <div class="ht-section hs-editors grid">
+{% block content %}
+<div class="ht-section hs-editors grid">
 
-            <div class="hs-content">
-                <div class="container">
+    <div class="hs-content">
+        <div class="container">
 
-                    <!-- SIDE BAR -->
-                    <div class="ht-sidebar">
-                        <aside class="ht-widget hw-posts-tab">
-                            <!-- ORDER MENU -->
-                            <div class="widget-content">
-                                <ul class="nav-tab" role="tablist">
-                                    <li role="presentation" class="active"><a href="#hw-tab-popular" aria-controls="hw-tab-popular" role="tab" data-toggle="tab">Panier</a></li>
-                                </ul>
+            <!-- SIDE BAR -->
+            <div class="ht-sidebar">
+                <aside class="ht-widget hw-posts-tab">
+                    <!-- ORDER MENU -->
+                    <div class="widget-content">
+                        <div class="text-center">
+                            <h3 class="heading">Panier</h3>
+                        </div>
+                        <!-- ORDER HEADER -->
+                        <div class="tab-content-head">
+                            <article class="post">
+                                <h3> Commande </h3>
+                                <p>Etat : {% if orderCookies.state == "TOBEPAID" %} Commande à régler {% endif %}</p>
+                                <p>Utilisateur : {{ user.firstname }} {{ user.lastname }}</p>
+                            </article>
+                        </div>
 
-                                <!-- ORDER HEADER -->
-                                <div class="tab-content-head" >
-                                    <article class="post">
-                                        <h3> Commande </h3>
-                                        <p>Etat : {% if orderCookies.state == "TOBEPAID" %} Commande à régler {% endif %}</p>
-                                        <p>Utilisateur : {{ user.firstname }} {{ user.lastname }}</p>
-                                    </article>
-                                </div>
-
-                                <!-- ORDER PIZZA -->
-                                {% if orderCookies %}
-                                <div class="tab-content">
-                                    <div role="tabpanel" class="tab-pane fade in active" id="hw-tab-popular">
-                                        <article class="post">
-                                            <div class="content orderContent">
-                                                {% for orderPizza in orderCookies.pizzaList %}
-                                                <h4>{{orderPizza.name}} : <a href="/api/basket/delelePizza/{{orderPizza.id}}">Retirer la pizza</a></h4>
-                                                <div class="meta-rate" title="user order">
-                                                    Prix : {{orderPizza.price}} euros <br/>
-                                                    Description : {{orderPizza.description}} <br/>
-                                                    Taille de la pâte : {{orderPizza.sizeType}} <br/>
-                                                    Type de pâte : {{orderPizza.doughType}} <br/>
-                                                </div>
-                                                {% endfor %}
-                                            </div>
-                                        </article>
+                        <!-- ORDER PIZZA -->
+                        {% if orderCookies %}
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane fade in active" id="hw-tab-popular">
+                                <article class="post">
+                                    <div class="content orderContent">
+                                        {% for orderPizza in orderCookies.pizzaList %}
+                                        <h4>{{orderPizza.name}} : <a href="/api/basket/delelePizza/{{orderPizza.id}}">Retirer
+                                            la pizza</a></h4>
+                                        <div class="meta-rate" title="user order">
+                                            Prix : {{orderPizza.price}} euros <br/>
+                                            Description : {{orderPizza.description}} <br/>
+                                            Taille de la pâte : {{orderPizza.sizeType}} <br/>
+                                            Type de pâte : {{orderPizza.doughType}} <br/>
+                                        </div>
+                                        {% endfor %}
                                     </div>
-                                </div>
-                                {% endif %}
-                                <div role="tabpanel" class="tab-pane fade"></div>
-                                <div role="tabpanel" class="tab-pane fade"></div>
+                                </article>
                             </div>
-                        </aside>
-                        <ul class="nav-tab" role="tablist">
-                            <li role="presentation"><a href="/api/orders/paypal" role="tab" data-toggle="tab"> Commander ({{ orderCookies.pizzaList.length }}) </a></li>
-                            <li role="presentation"><a href="/api/basket/cleanBasket/" role="tab" data-toggle="tab"> Vider </a></li>
-                        </ul>
+                        </div>
+                        {% endif %}
+                        <div role="tabpanel" class="tab-pane fade"></div>
+                        <div role="tabpanel" class="tab-pane fade"></div>
+                    </div>
+                </aside>
+                {% if orderCookies %}
+                <!--TODO Add total order price to the order layout-->
+                <div id="row-total-order-price">
+                    <p>Prix total de la commande: {{}}</p>
+
+                </div>
+                <div id="row-actions-order-basket">
+                    <div class="ht-button view-more-button orderBasket">
+                        <a class="btn btn-default" title="Passer commande"
+                           href="/api/orders/paypal">
+                            <i class="fa fa-arrow-left"></i>Commander<i
+                                class="fa fa-arrow-right"></i>
+                        </a>
                     </div>
 
-                    <!-- AFFICHAGE PIZZA -->
-                    <div class="row">
-
-                        {% for menu in menus %}
-                            {% for pizza in menu.Products %}
-                                <div class="entry col-xs-12 col-sm-3">
-                                    <div class="entry-media">
-                                        <div class="thumb">
-                                            <img src="http://image.dominos.fr/images/pizza/{{ pizza.LinkedItem.ItemCode }}detail.png" alt="">
-                                        </div>
-                                    </div>
-                                    <h3 class="entry-name">{{ pizza.Name }}</h3>
-                                    <p class="entry-position">{{ pizza.Price.Delivered }}</p>
-                                    <div class="entry-social">
-                                        <div class="entry-social-inner">
-                                            <a href="/api/basket/addPizza/name/{{pizza.Name}}/price/{{pizza.Price.Delivered}}" class="test" class="fa fa-shopping-basket">Ajouter au panier</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% endfor %}
-
+                    <div class="ht-button view-more-button cleanUserBasket">
+                        <a class="btn btn-default view-more-button" title="Vider le panier"
+                           href="/api/basket/cleanBasket">
+                            <i class="fa fa-arrow-left"></i>Vider le panier<i
+                            class="fa fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
+                {% endif %}
+            </div>
+
+            <!-- AFFICHAGE PIZZA -->
+            <div class="row">
+
+                {% for menu in menus %}
+                {% for pizza in menu.Products %}
+                <div class="entry col-xs-12 col-sm-3">
+                    <div class="entry-media">
+                        <div class="thumb">
+                            <img src="http://image.dominos.fr/images/pizza/{{ pizza.LinkedItem.ItemCode }}detail.png"
+                                 alt="">
+                        </div>
+                    </div>
+                    <h3 class="entry-name">{{ pizza.Name }}</h3>
+                    <div class="entry-social">
+                        <div class="entry-social-inner">
+                            <a href="/api/basket/addPizza/name/{{pizza.Name}}" class="test"
+                               class="fa fa-shopping-basket">Ajouter au panier</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endfor %}
+
             </div>
         </div>
-    {% endblock %}
+    </div>
+</div>
+{% endblock %}
 
-    {% block footer %}
-        {% parent %}
-    {% endblock %}
+{% block footer %}
+{% parent %}
+{% endblock %}

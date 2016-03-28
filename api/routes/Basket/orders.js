@@ -17,6 +17,10 @@ router.get('/getAll', function (req, res, next) {
     });
 });
 
+/*
+bdelyon@ynov.com
+BdeLyon01***
+    */
 router.get('/paypal', function (req, res, next) {
     var configSandbox = {
         'mode': 'sandbox',

@@ -90,18 +90,18 @@ router.post('/users/updUser', function (req, res, next) {
 /*
  - Action: Creates a new session object in DB
  - Returns: callback with the created session 
-             error if it's the case or if object from db is null/empty
+ error if it's the case or if object from db is null/empty
  */
 router.get('/session/new', function (req, res) {
     sessionUtils.createSession(function (err, sessionCreated) {
         if (err) {
-            logger.error('Error while creating session:'+err);
+            logger.error('Error while creating session:' + err);
         }
         if (_.isNull(sessionCreated) || _.isEmpty(sessionCreated)) {
 
             res.render('Administration/back-dashboard-session', {liveSession: null});
         } else {
-            logger.debug('displaying retrieved live session :'+sessionCreated);
+            logger.debug('displaying retrieved live session :' + sessionCreated);
             res.render('Administration/back-dashboard-session', {liveSession: sessionCreated});
         }
     });
@@ -111,15 +111,49 @@ router.get('/session/new', function (req, res) {
 router.get('/session/live', function (req, res) {
     sessionUtils.getCurrentSession(function (err, session) {
         if (err) {
-            logger.error('Error while getting current session:'+err);
+            logger.error('Error while getting current session:' + err);
         }
         if (_.isNull(session) || _.isEmpty(session)) {
-
             res.render('Administration/back-live-session', {liveSession: null});
         } else {
-            logger.debug('displaying retrieved live session :'+session);
-            res.render('Administration/back-live-session', {liveSession: session});
+            Order.find({})//.find({user:req.params.value})
+                .populate('user')
+                .exec(function (err, orders) {
+                    if (err) logger.error(err.message);
+                    logger.debug('Orders:' + orders);
+
+                    //res.json(orders);
+                    Pizza.find().exec(function (err, pizzas) {
+                        //res.json(pizzas);
+                        logger.debug('displaying retrieved live session :' + session);
+                        res.render('Administration/back-live-session', {
+                            liveSession: session,
+                            orders: orders,
+                            pizzas: pizzas
+                        });
+                    });
+                });
+
         }
+    });
+});
+
+router.get('/session/live/close', function (req, res) {
+    sessionUtils.getCurrentSession(function (err, session) {
+        if (err) {
+            logger.error('Error while getting current session:' + err);
+        }
+
+        Session.findOneAndUpdate({_id: session.id},
+            {
+                $set: {
+                    active: false
+                }
+            },
+            {new: true},
+            function (session, err) {
+                res.redirect('/session/history');
+            });
     });
 });
 

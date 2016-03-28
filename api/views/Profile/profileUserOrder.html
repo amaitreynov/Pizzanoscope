@@ -39,9 +39,9 @@
                     <div class="row-member">
                         <h3 class="entry-name">
                             {%if order.state == 'TOBEPAID'%}
-                                <span class="orderTobePaid">In Progress</span> - {{ moment(order.updated_at).format('MMMM Do YYYY, h:mm:ss a') }}
+                                <span class="orderTobePaid">In Progress</span> - {{ moment(order.updated_at).format('DD/MM/YYYY, HH:mm:ss') }}
                             {% else %}
-                                <span class="orderPayed">Order Payed</span> - {{order.updated_at}}
+                                <span class="orderPayed">Order Payed</span> - {{ moment(order.updated_at).format('DD/MM/YYYY, HH:mm:ss') }}
                             {% endif %}
                             <button type="button" class="ht-button btn btn-info" data-toggle="collapse"
                                     data-target=".order-details-{{order.id}}">Détails

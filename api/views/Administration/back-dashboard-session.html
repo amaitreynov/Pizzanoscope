@@ -32,44 +32,49 @@
 <div class="ht-section hs-editors grid">
     <div class="hs-content">
         <div class="container">
-
-            {% for order in orders %}
             <hr>
             <div class="row">
-                {% for user in users %}
-                <div class="bo-order-user">
-                    {% if user.id == order.user %}
-                    <h3>Order's user: {{user.username}}</h3>
-
-                    {% endif %}
+                <div class="entry-social-inner">
+                    <a href="/api/admin/session/new/" class="test" class="fa fa-shopping-basket">Créer une session</a>
                 </div>
-                {% endfor %}
-                <h3>Order details: {{order.state}}</h3>
-                {% for pizzaId in order.pizzaList %}
-                <div class="bo-order-pizzalist">
-                    {% for pizza in pizzas %}
-                    {% if pizza.id == pizzaId %}
-                    <div class="bo-order-pizza">
-                        <h4>Pizza details:</h4>
-                        <li>{{pizza.name}}</li>
-                        <li>{{pizza.description}}</li>
-                        <li>{{pizza.price}}</li>
-                        <li>{{pizza.sizeType}}</li>
-                        <li>{{pizza.doughType}}</li>
-                    </div>
-                    {% endif %}
+                {% for order in orders %}
+                <hr>
+                <div class="row">
+                    {% for user in users %}
+                    <div class="bo-order-user">
+                        {% if user.id == order.user %}
+                        <h3>Order's user: {{user.username}}</h3>
 
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <h3>Order details: {{order.state}}</h3>
+                    {% for pizzaId in order.pizzaList %}
+                    <div class="bo-order-pizzalist">
+                        {% for pizza in pizzas %}
+                        {% if pizza.id == pizzaId %}
+                        <div class="bo-order-pizza">
+                            <h4>Pizza details:</h4>
+                            <li>{{pizza.name}}</li>
+                            <li>{{pizza.description}}</li>
+                            <li>{{pizza.price}}</li>
+                            <li>{{pizza.sizeType}}</li>
+                            <li>{{pizza.doughType}}</li>
+                        </div>
+                        {% endif %}
+
+                        {% endfor %}
+                    </div>
                     {% endfor %}
                 </div>
                 {% endfor %}
+                <div class="row">
+
+                </div>
             </div>
-            {% endfor %}
-
         </div>
-    </div>
-</div>
-{% endblock %}
+        {% endblock %}
 
-{% block footer %}
-{% parent %}
-{% endblock %}
+        {% block footer %}
+        {% parent %}
+        {% endblock %}

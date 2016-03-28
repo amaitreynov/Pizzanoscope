@@ -35,6 +35,7 @@ router.get('/getAll', function (req, res) {
             logger.info('ending http request');
             var bodyParsed = JSON.parse(body);
             //logger.debug('pizzas from api:' + JSON.stringify(bodyParsed));
+            //TODO parse the pizzas body to remove the unused ones and store it in session
             var pizzas = bodyParsed.MenuPages[1].SubMenus;
             var token = new Cookies(req, res).get('access_token');
             var user = jwt.decode(token, config.secret);

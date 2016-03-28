@@ -11,6 +11,7 @@ router.get(('/'), function (req, res) {
     res.render('SignUp/signUp', {title: 'S\'inscrire'});
 });
 
+//TODO refadtor the code in such a way to use a createUser method in userUtils instead of making the process in here
 router.post('/addUser', function (req, res) {
     var registerErr = null;
     var m_mail = req.body.mail.toString();

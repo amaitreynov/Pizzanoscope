@@ -1,12 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose'),
-    // UserDB = require('../../Models/UserDB'),
+// UserDB = require('../../Models/UserDB'),
     User = mongoose.model('User'),
     Pizza = mongoose.model('Pizza'),
     Order = mongoose.model('Order');
 var Cookies = require("cookies");
+var _ = require('lodash');
 var utils = require("../../Utils/securityUtils.js");
+var sessionUtils = require("../../Utils/sessionUtils.js");
 var config = require('../../config.json'),
     logger = require('log4js').getLogger('controller.admin');
 var jwt = require('jsonwebtoken');
@@ -35,7 +37,7 @@ router.get('/users', function (req, res) {
 
         var token = new Cookies(req, res).get('access_token');
         var user = jwt.decode(token, config.secret);
-        logger.debug('Current User :'+user._doc);
+        logger.debug('Current User :' + user._doc);
         res.render('Administration/back-users', {users: usersRet, currentUser: user._doc});
     });
     //res.write('hello');
@@ -43,7 +45,7 @@ router.get('/users', function (req, res) {
 
 router.get('/users/deactivate/:value', function (req, res) {
     console.log(req.params.value);
-    User.findOneAndUpdate({_id: req.params.value},{$set:{active: false}}).exec(function (err, user) {
+    User.findOneAndUpdate({_id: req.params.value}, {$set: {active: false}}).exec(function (err, user) {
         if (err) throw err;
         res.redirect('/api/admin/users');
     });
@@ -51,7 +53,7 @@ router.get('/users/deactivate/:value', function (req, res) {
 
 router.get('/users/activate/:value', function (req, res) {
     console.log(req.params.value);
-    User.findOneAndUpdate({_id: req.params.value},{$set:{active: true}}).exec(function (err, user) {
+    User.findOneAndUpdate({_id: req.params.value}, {$set: {active: true}}).exec(function (err, user) {
         if (err) throw err;
         res.redirect('/api/admin/users');
     });
@@ -85,12 +87,40 @@ router.post('/users/updUser', function (req, res, next) {
 });
 
 /** SESSION **/
+/*
+ - Action: Creates a new session object in DB
+ - Returns: callback with the created session 
+             error if it's the case or if object from db is null/empty
+ */
+router.get('/session/new', function (req, res) {
+    sessionUtils.createSession(function (err, sessionCreated) {
+        if (err) {
+            logger.error('Error while creating session:'+err);
+        }
+        if (_.isNull(sessionCreated) || _.isEmpty(sessionCreated)) {
+
+            res.render('Administration/back-dashboard-session', {liveSession: null});
+        } else {
+            logger.debug('displaying retrieved live session :'+sessionCreated);
+            res.render('Administration/back-dashboard-session', {liveSession: sessionCreated});
+        }
+    });
+});
+
 /* GET live session  */
 router.get('/session/live', function (req, res) {
-    Order.find().exec(function (err, orders) {
-        res.render('Administration/back-live-session', orders);
+    sessionUtils.getCurrentSession(function (err, session) {
+        if (err) {
+            logger.error('Error while getting current session:'+err);
+        }
+        if (_.isNull(session) || _.isEmpty(session)) {
+
+            res.render('Administration/back-live-session', {liveSession: null});
+        } else {
+            logger.debug('displaying retrieved live session :'+session);
+            res.render('Administration/back-live-session', {liveSession: session});
+        }
     });
-    //res.write('hello');
 });
 
 /* GET all the history */
@@ -100,6 +130,7 @@ router.get('/session/history', function (req, res) {
     });
     //res.write('hello');
 });
+
 /* GET the details of an old session */
 router.get('/session/history/:sessionId', function (req, res) {
     Order.find().exec(function (err, orders) {
@@ -107,8 +138,5 @@ router.get('/session/history/:sessionId', function (req, res) {
     });
     //res.write('hello');
 });
-
-
-
 
 module.exports = router;

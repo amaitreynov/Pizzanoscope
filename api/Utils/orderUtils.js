@@ -10,6 +10,7 @@ var Order = mongoose.model('Order');
 var Pizza = mongoose.model('Pizza');
 var User = mongoose.model('User');
 var Class = mongoose.model('Class');
+var sessionUtils = require('./sessionUtils');
 
 /*
  - Action: Adds a pizza to  the pizzaList attribute of the provided order
@@ -71,25 +72,33 @@ module.exports.getPizzasFromOrder = function (orderId, next) {
  */
 module.exports.createPizza = function (req, next) {
     logger.info('Creating pizza with name \' ' + sanitizer.escape(req.params.value1) + '\' and price: ' + sanitizer.escape(req.params.value2.substr(0, 2)));
-    //create pizza
-    var pizza = new Pizza({
-        name: sanitizer.escape(req.params.value1),
-        description: "Description Pizza",
-        price: sanitizer.escape(req.params.value2.substr(0, 2)),
-        sizeType: "Large",
-        doughType: "Classic"
-    });
-
-    pizza.save(function (err, savedPizza) {
-        if (err)
+    //get current session to have pizza price infos & other stuff
+    sessionUtils.getCurrentSession(function (err, session) {
+        if (err) {
             return next(err, null);
-
-        if (_.isNull(savedPizza) || _.isEmpty(savedPizza)) {
-            return next({error: 'Bad object from DB for pizza'}, null);
         }
         else {
-            // logger.debug('Created pizza:' + savedPizza);
-            return next(null, savedPizza);
+            //create pizza
+            var pizza = new Pizza({
+                name: sanitizer.escape(req.params.value1),
+                description: "Description Pizza",
+                price: session.pizzaPrice,
+                sizeType: "Large",
+                doughType: "Classic"
+            });
+
+            pizza.save(function (err, savedPizza) {
+                if (err) {
+                    return next(err, null);
+                }
+                if (_.isNull(savedPizza) || _.isEmpty(savedPizza)) {
+                    return next({error: 'Bad object from DB for pizza'}, null);
+                }
+                else {
+                    // logger.debug('Created pizza:' + savedPizza);
+                    return next(null, savedPizza);
+                }
+            });
         }
     });
 };
@@ -124,8 +133,8 @@ module.exports.createOrder = function (user, pizzaList, next) {
 
 
 /*
-- Action: Removes the given pizza from the given order
-- Returns: the order with updated pizzaList attribute
+ - Action: Removes the given pizza from the given order
+ - Returns: the order with updated pizzaList attribute
  */
 //TODO add error in callback return if error happens
 module.exports.removePizzaFromOrder = function (pizza, orderToUpdate, next) {
@@ -168,8 +177,8 @@ module.exports.removePizzaFromOrder = function (pizza, orderToUpdate, next) {
 };
 
 /*
-- Action: delete the given order from the DB
-- Returns: callback (see returned callbacks in code for details)
+ - Action: delete the given order from the DB
+ - Returns: callback (see returned callbacks in code for details)
  */
 module.exports.deleteOrder = function (orderToDelete, next) {
     logger.info('Deleting order ' + orderToDelete._id);
@@ -196,7 +205,7 @@ module.exports.deleteOrder = function (orderToDelete, next) {
                             return next({error: 'Empty or null cb from mongoose remove order'});
                         }
                         else {//order as been removed
-                            
+
                             logger.debug('Number of rows affected :' + orderRemoved);
 
                             //then the pizzas in order

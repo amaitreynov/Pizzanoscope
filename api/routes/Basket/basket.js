@@ -96,7 +96,7 @@ router.get('/cleanBasket/', function (req, res) {
     });
 });
 
-router.get('/addPizza/name/:value1/price/:value2', function (req, res) {
+router.get('/addPizza/name/:value1', function (req, res) {
     var orderCookie = req.cookies.OrderCookie;
     logger.debug('order cookie:' + orderCookie);
     /*if order is not created:

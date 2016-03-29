@@ -117,16 +117,13 @@
         <div class="container">
 
             <!-- SIDE BAR -->
-            <div class="ht-sidebar ">
+            <div class="ht-sidebar">
                 <aside class="ht-widget hw-posts-tab">
                     <!-- ORDER MENU -->
                     <div class="widget-content">
-                        <ul class="nav-tab" role="tablist">
-                            <li role="presentation" class="active"><a href="#hw-tab-popular"
-                                                                      aria-controls="hw-tab-popular" role="tab"
-                                                                      data-toggle="tab">Panier</a></li>
-                        </ul>
-
+                        <div class="text-center">
+                            <h3 class="heading">Panier</h3>
+                        </div>
                         <!-- ORDER HEADER -->
                         <div class="tab-content-head">
                             <article class="post">
@@ -161,12 +158,30 @@
                         <div role="tabpanel" class="tab-pane fade"></div>
                     </div>
                 </aside>
-                <ul class="nav-tab" role="tablist">
-                    <li role="presentation"><a href="/api/orders/paypal" role="tab" data-toggle="tab"> Commander ({{
-                        orderCookies.pizzaList.length }}) </a></li>
-                    <li role="presentation"><a href="/api/basket/cleanBasket/" role="tab" data-toggle="tab"> Vider </a>
-                    </li>
-                </ul>
+                {% if orderCookies %}
+                <!--TODO Add total order price to the order layout-->
+                <div id="row-total-order-price">
+                    <p>Prix total de la commande: {{}}</p>
+
+                </div>
+                <div id="row-actions-order-basket">
+                    <div class="ht-button view-more-button orderBasket">
+                        <a class="btn btn-default" title="Passer commande"
+                           href="/api/orders/paypal">
+                            <i class="fa fa-arrow-left"></i>Commander<i
+                                class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="ht-button view-more-button cleanUserBasket">
+                        <a class="btn btn-default view-more-button" title="Vider le panier"
+                           href="/api/basket/cleanBasket">
+                            <i class="fa fa-arrow-left"></i>Vider le panier<i
+                            class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
             </div>
 
             <!-- AFFICHAGE PIZZA -->
@@ -183,10 +198,9 @@
                         </div>
 
                     <h3 class="entry-name">{{ pizza.Name }}</h3>
-                    <p class="entry-position">{{ pizza.Price.Delivered }}</p>
                     <div class="entry-social">
                         <div class="entry-social-inner">
-                            <a href="/api/basket/addPizza/name/{{pizza.Name}}/price/{{pizza.Price.Delivered}}"
+                            <a href="/api/basket/addPizza/name/{{pizza.Name}}"
                                class="test" class="fa fa-shopping-basket">Ajouter au panier</a>
                         </div>
                     </div>

@@ -53,7 +53,8 @@ mongoose.connection.once('open', function callback() {
 logger.info('-- Initializing express --');
 var express = require('express'), app = express();
 
-logger.info('-- Using moment for templating --');
+
+logger.info('-- Initializing moment for templating --');
 app.locals.moment = require('moment');
 
 // Cookies

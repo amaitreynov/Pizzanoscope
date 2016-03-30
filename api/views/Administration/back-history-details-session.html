@@ -46,9 +46,11 @@
                                 {{ order.user.firstname }} {{ order.user.lastname }} - {{
                                 moment(order.updated_at).format('DD/MM/YYYY, HH:mm:ss') }} - <span
                                     class="orderTobePaid">In Progress</span>
+                                - Total order price : {{ order.totalPrice }} euros
                                 {% else %}
                                 {{ order.user.firstname }} {{ order.user.lastname }} - {{
                                 moment(order.updated_at).format('DD/MM/YYYY, HH:mm:ss') }} - <span class="orderPayed">Order Payed</span>
+                                - Total order price : {{ order.totalPrice }} euros
                                 {% endif %}
                                 <button type="button" class="ht-button btn btn-info" data-toggle="collapse"
                                         data-target=".order-details-{{order.id}}">Détails
@@ -63,7 +65,7 @@
                                 {% if pizza.id == pizzaId %}
                                 <div class="bo-order-pizza">
                                     <B>{{pizza.name}}</B>
-                                    <li>Prix : {{pizza.price}}</li>
+                                    <li>Prix : {{pizza.price}} euros</li>
                                     <li>Taille de la pizza : {{pizza.sizeType}}</li>
                                     <li>Type de pate : {{pizza.doughType}}</li>
                                 </div>

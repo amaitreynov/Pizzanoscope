@@ -16,6 +16,7 @@ var Order = new Schema({
     user: { type: Schema.ObjectId, ref: 'User', required: true },
     state: { type: String, required: true, trim: true },
     paymentType: { type: String, required: true, trim: true },
+    totalPrice: { type: Number, required: true},
     created_at: { type: Date, required: true, default: Date.now },
     updated_at: { type: Date, required: true, default: Date.now }
 });

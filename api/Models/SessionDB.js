@@ -15,6 +15,8 @@ var Session = new Schema({
     active: { type: Boolean, required: true },
     pizzaPrice: {type: Number, required: false},
     providerPrice: {type: Number, required: false},
+    totalPrice: {type: Number, required: false},
+    requestData: {type: String, required: false},
     created_at: { type: Date, required: true, default: Date.now },
     updated_at: { type: Date, required: true, default: Date.now }
 });

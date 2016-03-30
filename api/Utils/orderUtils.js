@@ -20,6 +20,11 @@ var sessionUtils = require('./sessionUtils');
 module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, next) {
     logger.info('adding the pizza ' + JSON.stringify(pizzaToAdd._id) + ' to pizzaList of order ' + JSON.stringify(orderToUpdate._id));
 
+    //calculate new order totalPrice
+    var newTotalPrice = orderToUpdate.totalPrice;
+    newTotalPrice += pizzaToAdd.price;
+
+    //update the pizzaList
     var pizzaListTemp = orderToUpdate.pizzaList;
     pizzaListTemp.push(pizzaToAdd._id);
     // logger.debug('pizzalistTemp: ' + pizzaListTemp);
@@ -29,7 +34,8 @@ module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, n
         {
             $set: {
                 updated_at: Date.now(),
-                pizzaList: pizzaListTemp
+                pizzaList: pizzaListTemp,
+                totalPrice: newTotalPrice
             }
         },
         {new: true},
@@ -110,20 +116,22 @@ module.exports.createPizza = function (req, next) {
  - Returns: callback with the created order, error otherwise
  */
 //TODO add session update
-module.exports.createOrder = function (user, pizzaList, next) {
-    logger.info('Creating order with pizzaList ' + pizzaList + ' for user: ' + user._id);
+module.exports.createOrder = function (user, pizza, next) {
+    logger.info('Creating order with pizza ' + pizza._id + ' for user: ' + user._id);
+
     //create order with pizzalist
     var order = new Order({
-        "pizzaList": [pizzaList],
+        "pizzaList": [pizza._id],
         "user": user,
         "state": "TOBEPAID",
-        "paymentType": "PayPal"
+        "paymentType": "PayPal",
+        "totalPrice": pizza.price
     });
 
     order.save(function (err, savedOrder) {
-        if (err)
+        if (err) {
             return next(err, null);
-
+        }
         if (_.isNull(savedOrder) || _.isEmpty(savedOrder)) {
             return next({error: 'Bad object from DB for order'}, null);
         }
@@ -133,7 +141,6 @@ module.exports.createOrder = function (user, pizzaList, next) {
         }
     });
 };
-
 
 /*
  - Action: Removes the given pizza from the given order
@@ -148,13 +155,15 @@ module.exports.removePizzaFromOrder = function (pizza, orderToUpdate, next) {
         function (err, orderFinded) {
             //TODO catch error in this function if happens
             //logger.debug('Deleting Pizza :'+pizza);
+            var newPrice = orderFinded.totalPrice;
             var pizzaListTemp = orderFinded.pizzaList;
             pizzaListTemp.forEach(function (item) {
                 // logger.debug('Item :' + item);
-                if (pizza.equals(item)) {
+                if (pizza._id.equals(item)) {
                     // logger.debug('Removed Pizza :' + item);
                     pizzaListTemp.splice(pizzaListTemp.indexOf(item), 1);
-
+                    newPrice -= pizza.price;
+                    logger.debug('New price: ', newPrice);
                     //logger.debug(PizzaListTemp.indexOf(item));
                 }
                 //logger.debug('Current pizzaList '+pizzaListTemp);
@@ -165,7 +174,8 @@ module.exports.removePizzaFromOrder = function (pizza, orderToUpdate, next) {
                 {
                     $set: {
                         updated_at: Date.now(),
-                        pizzaList: pizzaListTemp
+                        pizzaList: pizzaListTemp,
+                        totalPrice: newPrice
                     }
                 },
                 {new: true},
@@ -225,7 +235,7 @@ module.exports.deleteOrder = function (orderToDelete, next) {
                                 });
                             });
 
-                            logger.debug('alright');
+                            // logger.debug('alright');
                             //return next
                             return next(null);
                         }

@@ -123,9 +123,10 @@ router.get('/addPizza/name/:value1', function (req, res) {
                 // logger.debug('Created pizza: ' + JSON.stringify(createdPizza));
 
                 //create new order with previously created pizza
-                orderUtils.createOrder(user._doc, createdPizza._id, function (err, createdOrder) {
-                    if (err)
+                orderUtils.createOrder(user._doc, createdPizza, function (err, createdOrder) {
+                    if (err){
                         throw (err.message);
+                    }
                     //TODO handle with a message in view instead of status
                     if (_.isNull(createdOrder) || _.isEmpty(createdOrder)) {
                         res.set('Content-Type', 'application/json');

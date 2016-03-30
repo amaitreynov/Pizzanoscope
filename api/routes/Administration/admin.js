@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose'),
+    SessionDB = require('../../Models/SessionDB'),
+    Session = mongoose.model('Session'),
 // UserDB = require('../../Models/UserDB'),
     User = mongoose.model('User'),
     Pizza = mongoose.model('Pizza'),
@@ -120,7 +122,7 @@ router.get('/session/live', function (req, res) {
                 .populate('user')
                 .exec(function (err, orders) {
                     if (err) logger.error(err.message);
-                    logger.debug('Orders:' + orders);
+                    //logger.debug('Orders:' + orders);
 
                     //res.json(orders);
                     Pizza.find().exec(function (err, pizzas) {
@@ -138,13 +140,13 @@ router.get('/session/live', function (req, res) {
     });
 });
 
-router.get('/session/live/close', function (req, res) {
+router.get('/session/close', function (req, res) {
     sessionUtils.getCurrentSession(function (err, session) {
         if (err) {
             logger.error('Error while getting current session:' + err);
         }
 
-        Session.findOneAndUpdate({_id: session.id},
+        Session.findOneAndUpdate({_id: session._id},
             {
                 $set: {
                     active: false
@@ -152,15 +154,15 @@ router.get('/session/live/close', function (req, res) {
             },
             {new: true},
             function (session, err) {
-                res.redirect('/session/history');
+                res.redirect('/api/admin/session/history');
             });
     });
 });
 
 /* GET all the history */
 router.get('/session/history', function (req, res) {
-    Order.find().exec(function (err, orders) {
-        res.render('Administration/back-history-session', orders);
+    Session.find().exec(function (err, sessions) {
+        res.render('Administration/back-history-session', sessions);
     });
     //res.write('hello');
 });

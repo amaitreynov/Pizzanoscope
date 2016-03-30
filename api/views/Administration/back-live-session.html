@@ -64,7 +64,7 @@
                     <div class="row">
                         <button id="actUserAdmin" type="submit" class="ht-button view-more-button">
                             <a class="" title="Close session"
-                               href="/session/live/close">
+                               href="/api/admin/session/close">
                                 <i class="fa fa-arrow-left"></i>Terminer la session<i
                                     class="fa fa-arrow-right"></i>
                             </a>
@@ -74,7 +74,9 @@
                 </div>
             </div>
             <div class="row col-xs-10 col-sm-12">
+                {% for orderId in liveSession.orderList %}
                 {% for order in orders %}
+                {% if orderId == order.id %}
                 <div class="ht-form-block ht-form-block-profile-order">
                     <div class="row">
                         <div class="row-member">
@@ -109,8 +111,9 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
                 {% endfor %}
-
+                {% endfor %}
             </div>
             {% else %}
             <div class="hs-content col-xs-12 col-sm-12 ">

@@ -90,6 +90,8 @@ router.get('/cleanBasket/', function (req, res) {
                 Pizza.remove({_id: item}, function (err, pizzaRemoved) {
                     if (err) logger.error(err.message);
                     // logger.debug('Removed pizza :' + pizzaRemoved);
+                    //TODO handle session update when removing an order from orderList
+                    //=>removeOrderFromSession
                 });
             });
             res.clearCookie('OrderCookie');

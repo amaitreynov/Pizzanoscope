@@ -47,27 +47,27 @@ module.exports.createSession = function (req, next) {
     var session = new Session({
         name: req.body.CreateSessionName,
         startHour: Date.now(),
-        endHour: moment(req.body.CreateSessionEndDate+' '+req.body.CreateSessionEndHour,'YYYY-MM-DD HH:mm'),
+        endHour: moment(req.body.CreateSessionEndDate + ' ' + req.body.CreateSessionEndHour, 'YYYY-MM-DD HH:mm'),
         active: true,
         pizzaPrice: req.body.CreateSessionPizzaPrice,
         providerPrice: req.body.CreateSessionProviderPrice
     });
 
-        session.save(function (err, sessionCreated) {
-            if (err) {
-                logger.error('Error while creating the ' + err);
-                return next(err, null);
-            }
-            else {
-                var schedule = require('node-schedule');
-                var date = new Date(2016, 03, 30, 11, 58, 0);
+    session.save(function (err, sessionCreated) {
+        if (err) {
+            logger.error('Error while creating the ' + err);
+            return next(err, null);
+        }
+        else {
+            var schedule = require('node-schedule');
+            var date = new Date(2016, 03, 30, 11, 58, 0);
 
-                var j = schedule.scheduleJob(date, function(){
-                    logger.debug('The world is going to end today.');
-                });//moment(req.body.CreateSessionEndDate+' '+req.body.CreateSessionEndHour,'YYYY-MM-DD HH:mm')+60);
-                logger.debug(j);
-                return next(null, sessionCreated);
-            }
+            var j = schedule.scheduleJob(date, function () {
+                logger.debug('The world is going to end today.');
+            });//moment(req.body.CreateSessionEndDate+' '+req.body.CreateSessionEndHour,'YYYY-MM-DD HH:mm')+60);
+            logger.debug(j);
+            return next(null, sessionCreated);
+        }
     });
 };
 
@@ -75,40 +75,64 @@ module.exports.createSession = function (req, next) {
  - Action: Adds an order to the orderList attribute of the provided session
  - Returns: callback with the updated session
  */
-module.exports.addOrderInSessionOrderList = function (orderToAdd, sessionToUpdate, next) {
-    logger.info('Adding the order ' + JSON.stringify(orderToAdd._id) + ' to orderList of order ' + JSON.stringify(sessionToUpdate._id));
+module.exports.addOrderInSessionOrderList = function (orderToAdd, next) {
+    logger.info('Adding the order ' + JSON.stringify(orderToAdd._id) + ' to orderList of current session...');
+    //get the current session
+    //get the orderList
+    //update the order list
+    //update the price
+    exports.getCurrentSession(function (err, session) {
+        if (err) {
+            return next(err, null);
+        }
+        else {
+            //TODO move that in another split function
+            // logger.debug('Received session: ', session);
+            //check if totalPrice is null or empty
+            var newTotalPrice = session.totalPrice;
+            // logger.debug('Session totalPrice before: ' + newTotalPrice);
 
-    //calculate new session totalPrice
-    var newTotalPrice = sessionToUpdate.totalPrice;
-    newTotalPrice += orderToAdd.totalPrice;
+            //calculate new session totalPrice
+            if(newTotalPrice){
+                //set the totalPrice
+                newTotalPrice += orderToAdd.totalPrice;
+            }
+            else if(!newTotalPrice){
+                newTotalPrice = orderToAdd.totalPrice;
+            }
+            // logger.debug('Final newTotalPrice: ' + newTotalPrice);
 
-    //update orderList
-    var orderListTemp = sessionToUpdate.pizzaList;
-    orderListTemp.push(orderToAdd._id);
-    // logger.debug('pizzalistTemp: ' + pizzaListTemp);
+            //update orderList
+            // logger.debug('Incoming orderListTemp: ' + session.orderList);
+            var orderListTemp = session.orderList;
+            // logger.debug('Created object orderListTemp: ' + orderListTemp);
+            orderListTemp.push(orderToAdd._id);
+            // logger.debug('Final orderListTemp: ' + orderListTemp);
 
-    Session.findOneAndUpdate(
-        {_id: sessionToUpdate._id},
-        {
-            $set: {
-                updated_at: Date.now(),
-                orderList: orderListTemp,
-                totalPrice: newTotalPrice
-            }
-        },
-        {new: true},
-        function (err, sessionUpdated) {
-            if (err) {
-                return next(err, null);
-            }
-            if (_.isNull(sessionUpdated) || _.isEmpty(sessionUpdated)) {
-                return next({error: 'Bad object from DB for pizza'}, null);
-            }
-            else {
-                // logger.debug('Updated order:' + orderUpdated);
-                return next(null, sessionUpdated);
-            }
-        });
+            Session.findOneAndUpdate(
+                {_id: session._id},
+                {
+                    $set: {
+                        updated_at: Date.now(),
+                        orderList: orderListTemp,
+                        totalPrice: newTotalPrice
+                    }
+                },
+                {new: true},
+                function (err, sessionUpdated) {
+                    if (err) {
+                        return next(err, null);
+                    }
+                    if (_.isNull(sessionUpdated) || _.isEmpty(sessionUpdated)) {
+                        return next({error: 'Bad object from DB for pizza'}, null);
+                    }
+                    else {
+                        // logger.debug('Updated order:' + orderUpdated);
+                        return next(null, sessionUpdated);
+                    }
+                });
+        }
+    });
 };
 
 /*
@@ -175,6 +199,12 @@ module.exports.removeOrderFromSession = function (order, sessionToUpdate, next) 
                 });
         });
 };
+
+
+//TODO add updateSession method with flags
+// => update the orderList with updated order
+// => update the totalPrice attr 
+
 
 /*
  - Action: delete the given order from the DB

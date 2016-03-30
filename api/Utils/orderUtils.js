@@ -47,6 +47,15 @@ module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, n
                 return next({error: 'Bad object from DB for pizza'}, null);
             }
             else {
+                // sessionUtils.getCurrentSession(function (err, session) {
+                //     if (err) {
+                //         return next(err, null);
+                //     }
+                //     else {
+                //         //TODO handle session update when adding a pizza to orderList
+                //         // => updateSessionTotalPrice
+                //     }
+                // });
                 // logger.debug('Updated order:' + orderUpdated);
                 return next(null, orderUpdated);
             }
@@ -77,7 +86,6 @@ module.exports.getPizzasFromOrder = function (orderId, next) {
  - Action: Creates a pizza with the provided details in query
  - Returns: callback with the created pizza, error otherwise
  */
-//TODO add session update
 module.exports.createPizza = function (req, next) {
     logger.info('Creating pizza with name \' ' + sanitizer.escape(req.params.value1));
     //get current session to have pizza price infos & other stuff
@@ -115,7 +123,6 @@ module.exports.createPizza = function (req, next) {
  - Action: Creates an order for the provided user with the provided pizza
  - Returns: callback with the created order, error otherwise
  */
-//TODO add session update
 module.exports.createOrder = function (user, pizza, next) {
     logger.info('Creating order with pizza ' + pizza._id + ' for user: ' + user._id);
 
@@ -137,7 +144,15 @@ module.exports.createOrder = function (user, pizza, next) {
         }
         else {
             // logger.debug('Created order:' + savedOrder);
-            return next(null, savedOrder);
+            sessionUtils.addOrderInSessionOrderList(savedOrder, function (err, updatedSession) {
+                if (err) {
+                    return next(err, null);
+                }
+                else {
+                    logger.debug('Updated session:' + updatedSession);
+                    return next(null, savedOrder);
+                }
+            });
         }
     });
 };
@@ -156,6 +171,7 @@ module.exports.removePizzaFromOrder = function (pizza, orderToUpdate, next) {
             //TODO catch error in this function if happens
             //logger.debug('Deleting Pizza :'+pizza);
             var newPrice = orderFinded.totalPrice;
+
             var pizzaListTemp = orderFinded.pizzaList;
             pizzaListTemp.forEach(function (item) {
                 // logger.debug('Item :' + item);
@@ -184,6 +200,8 @@ module.exports.removePizzaFromOrder = function (pizza, orderToUpdate, next) {
                         return next(err, null);
                     }
                     else {
+                        //TODO handle session update when removing a pizza from pizzaList
+                        // => updateSessionTotalPrice
                         return next(null, orderFinded);
                     }
                 });
@@ -219,7 +237,7 @@ module.exports.deleteOrder = function (orderToDelete, next) {
                         if (_.isNull(orderRemoved) || _.isEmpty(orderRemoved)) {
                             return next({error: 'Empty or null cb from mongoose remove order'});
                         }
-                        else {//order as been removed
+                        else {//order has been removed
 
                             logger.debug('Number of rows affected :' + orderRemoved);
 
@@ -234,7 +252,8 @@ module.exports.deleteOrder = function (orderToDelete, next) {
                                     }
                                 });
                             });
-
+                            //TODO handle session update when removing an order from orderList
+                            // => removeOrderFromSession with flag - (or remove)
                             // logger.debug('alright');
                             //return next
                             return next(null);

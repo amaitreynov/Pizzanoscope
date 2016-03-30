@@ -30,6 +30,8 @@
     "mongoose": "^4.2.5",
     "morgan": "~1.6.1",
     "njwt": "^0.2.3",
+    "nodemailer": "^2.3.0",
+    "nodemailer-mailgun-transport": "^1.0.1",
     "noty": "^2.3.8",
     "on-finished": "^2.3.0",
     "paypal-rest-sdk": "^1.6.6",

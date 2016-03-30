@@ -4,7 +4,8 @@
 
 var mongoose = require('mongoose');
 var _ = require('lodash');
-var logger = require('log4js').getLogger('utils.orders');
+var logger = require('log4js').getLogger('utils.sessions');
+var moment = require('moment');
 var SessionDB = require('../Models/SessionDB');
 var Session = mongoose.model('Session');
 var OrderDB = require('../Models/OrderDB');
@@ -40,26 +41,33 @@ module.exports.getCurrentSession = function (next) {
  error if it's the case or if object from db is null/empty
  */
 //TODO add parameters needed to create the session
-module.exports.createSession = function (next) {
-    logger.info('Cerating a new session...');
-
+module.exports.createSession = function (req, next) {
+    logger.info('Creating a new session...');
+    //logger.debug(moment(req.body.CreateSessionEndDate+' '+req.body.CreateSessionEndHour,'YYYY-MM-DD HH:mm'));
     var session = new Session({
-        name: 'session1',
+        name: req.body.CreateSessionName,
         startHour: Date.now(),
-        endHour: null,
+        endHour: moment(req.body.CreateSessionEndDate+' '+req.body.CreateSessionEndHour,'YYYY-MM-DD HH:mm'),
         active: true,
-        pizzaPrice: null,
-        providerPrice: null
+        pizzaPrice: req.body.CreateSessionPizzaPrice,
+        providerPrice: req.body.CreateSessionProviderPrice
     });
 
-    session.save(function (err, sessionCreated) {
-        if (err) {
-            logger.error('Error while creating the ' + err);
-            return next(err, null);
-        }
-        else {
-            return next(null, sessionCreated);
-        }
+        session.save(function (err, sessionCreated) {
+            if (err) {
+                logger.error('Error while creating the ' + err);
+                return next(err, null);
+            }
+            else {
+                var schedule = require('node-schedule');
+                var date = new Date(2016, 03, 30, 11, 58, 0);
+
+                var j = schedule.scheduleJob(date, function(){
+                    logger.debug('The world is going to end today.');
+                });//moment(req.body.CreateSessionEndDate+' '+req.body.CreateSessionEndHour,'YYYY-MM-DD HH:mm')+60);
+                logger.debug(j);
+                return next(null, sessionCreated);
+            }
     });
 };
 

@@ -60,7 +60,6 @@
                                    value="{{ liveSession.providerPrice }}" required>
                         </div>
                     </div>
-                    <!-- TODO -->
                     <div class="row">
                         <button id="actUserAdmin" type="submit" class="ht-button view-more-button">
                             <a class="" title="Close session"
@@ -82,9 +81,12 @@
                         <div class="row-member">
                             <h3 class="entry-name">
                                 {%if order.state == 'TOBEPAID'%}
-                                {{ order.user.firstname }} {{ order.user.lastname }} - {{ moment(order.updated_at).format('DD/MM/YYYY, HH:mm:ss') }} - <span class="orderTobePaid">In Progress</span>
+                                {{ order.user.firstname }} {{ order.user.lastname }} - {{
+                                moment(order.updated_at).format('DD/MM/YYYY, HH:mm:ss') }} - <span
+                                    class="orderTobePaid">In Progress</span>
                                 {% else %}
-                                {{ order.user.firstname }} {{ order.user.lastname }} - {{ moment(order.updated_at).format('DD/MM/YYYY, HH:mm:ss') }} - <span class="orderPayed">Order Payed</span>
+                                {{ order.user.firstname }} {{ order.user.lastname }} - {{
+                                moment(order.updated_at).format('DD/MM/YYYY, HH:mm:ss') }} - <span class="orderPayed">Order Payed</span>
                                 {% endif %}
                                 <button type="button" class="ht-button btn btn-info" data-toggle="collapse"
                                         data-target=".order-details-{{order.id}}">Détails
@@ -122,35 +124,38 @@
                         <h3 class="heading">Creer une session</h3>
                     </div>
 
-                    <div class="row">
-                        <input name="sessionId" type="hidden" value="{{liveSession.id}}">
-                        <div class="form-group col-xs-12 col-sm-12">
-                            <label for="CreateSessionName">Name : </label>
-                            <input id="CreateSessionName" name="CreateSessionName" type="text" required>
-                            <label for="CreateSessionStartHour">Start hour : </label>
-                            <input id="CreateSessionStartHour" name="CreateSessionStartHour" type="text" disabled="disabled"
-                                   value="{{ moment(Date.now()).format('D/MM/YYYY, HH:mm:ss') }}"
-                                   required>
-                            <label for="CreateSessionEndDate">End Date : </label>
-                            <input id="CreateSessionEndDate" name="CreateSessionEndDate" type="date" required>
-                            <label for="CreateSessionEndHour">End hour : </label>
-                            <input id="CreateSessionEndHour" name="CreateSessionEndHour" type="time" required>
-                            <label for="CreateSessionPizzaPrice">Pizza price : </label>
-                            <input id="CreateSessionPizzaPrice" name="CreateSessionPizzaPrice" type="number" required>
-                            <label for="CreateSessionProviderPrice">Provider price : </label>
-                            <input id="CreateSessionProviderPrice" name="CreateSessionProviderPrice" type="number" required>
+                    <form action="/api/admin/session/new" method="post">
+                        <div class="row">
+
+                            <input name="sessionId" type="hidden" value="{{liveSession.id}}">
+                            <div class="form-group col-xs-12 col-sm-12">
+                                <label for="CreateSessionName">Name : </label>
+                                <input id="CreateSessionName" name="CreateSessionName" type="text" required>
+                                <label for="CreateSessionStartHour">Start hour : </label>
+                                <input id="CreateSessionStartHour" name="CreateSessionStartHour" type="text"
+                                       disabled="disabled"
+                                       value="{{ moment(Date.now()).format('DD/MM/YYYY, HH:mm:ss') }}"
+                                       required>
+                                <label for="CreateSessionEndDate">End Date : </label>
+                                <input id="CreateSessionEndDate" name="CreateSessionEndDate" type="date" required>
+                                <label for="CreateSessionEndHour">End hour : </label>
+                                <input id="CreateSessionEndHour" name="CreateSessionEndHour" type="time" required>
+                                <label for="CreateSessionPizzaPrice">Pizza price : </label>
+                                <input id="CreateSessionPizzaPrice" name="CreateSessionPizzaPrice" type="number"
+                                       required>
+                                <label for="CreateSessionProviderPrice">Provider price : </label>
+                                <input id="CreateSessionProviderPrice" name="CreateSessionProviderPrice" type="number"
+                                       required>
+                            </div>
                         </div>
-                    </div>
-                    <!-- TODO -->
-                    <div class="row">
-                        <button type="submit" class="ht-button view-more-button">
-                            <a class="refAdminUser" title=""
-                               href="">
-                                <i class="fa fa-arrow-left"></i>Creer la session<i
-                                    class="fa fa-arrow-right"></i>
-                            </a>
-                        </button>
-                    </div>
+                        <!-- TODO -->
+                        <div class="row">
+                            <button type="submit" class="ht-button view-more-button">
+                                <i class="fa fa-arrow-left"></i>Creer la session
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
 
                 </div>
             </div>

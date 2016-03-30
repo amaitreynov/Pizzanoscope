@@ -15,6 +15,7 @@ var config = require('../../config.json'),
     logger = require('log4js').getLogger('controller.admin');
 var jwt = require('jsonwebtoken');
 
+
 /* GET admin home page. */
 /* GET dashboard session page */
 router.get('/', function (req, res) {
@@ -94,17 +95,17 @@ router.post('/users/updUser', function (req, res, next) {
  - Returns: callback with the created session 
  error if it's the case or if object from db is null/empty
  */
-router.get('/session/new', function (req, res) {
-    sessionUtils.createSession(function (err, sessionCreated) {
+router.post('/session/new', function (req, res) {
+    sessionUtils.createSession(req, function (err, sessionCreated) {
         if (err) {
             logger.error('Error while creating session:' + err);
         }
         if (_.isNull(sessionCreated) || _.isEmpty(sessionCreated)) {
 
-            res.render('Administration/back-dashboard-session', {liveSession: null});
+            res.render('Administration/back-live-session', {liveSession: null});
         } else {
             logger.debug('displaying retrieved live session :' + sessionCreated);
-            res.render('Administration/back-dashboard-session', {liveSession: sessionCreated});
+            res.render('Administration/back-live-session', {liveSession: sessionCreated});
         }
     });
 });
@@ -149,6 +150,7 @@ router.get('/session/close', function (req, res) {
         Session.findOneAndUpdate({_id: session._id},
             {
                 $set: {
+                    endHour: Date.now(),
                     active: false
                 }
             },

@@ -60,7 +60,7 @@ router.get('/paypal', function (req, res, next) {
     var cookieOrder = new Cookies(req, res).get("order");
 
     if (cookieOrder != undefined && cookieOrder != null && cookieOrder != "") {
-        parseOrderPaypalJson(paymentDescription, cookieOrder);
+        /*parseOrderPaypalJson(paymentDescription, cookieOrder);
         paypal.payment.create(paymentDescription, configSandbox, function (error, payment) {
             if (error) {
                 logger.error(error);
@@ -77,7 +77,8 @@ router.get('/paypal', function (req, res, next) {
                     res.redirect(redirectUrl);
                 }
             }
-        });
+        });*/
+        res.redirect('/api/orders/success')
     } else {
         res.redirect('/api/product/getAll');
     }

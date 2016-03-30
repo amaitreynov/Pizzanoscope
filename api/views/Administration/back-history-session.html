@@ -29,7 +29,49 @@
 {% endblock %}
 
 {% block content %}
+<div class="container">
 
+        {% for session in sessions %}
+    <div class="row col-xs-12 col-sm-12">
+
+    <div class="ht-form-block ht-form-block-profile-order">
+            <div class="row-member">
+                <h3 class="entry-name">
+                    {%if session.active == true%}
+                    {{ session.name }} - <span class="orderTobePaid">In Progress</span> - {{
+                    moment(session.startHour).format('DD/MM/YYYY') }}
+                    {% else %}
+                    {{ session.name }} - <span class="orderPayed">Session closed</span> - {{
+                    moment(session.startHour).format('DD/MM/YYYY') }}
+                    {% endif %}
+                    <button type="button" class="ht-button btn btn-info" data-toggle="collapse"
+                            data-target=".session-details-{{session.id}}">Détails
+                    </button>
+                    <button id="desUserAdmin" type="submit" class="ht-button view-more-button">
+                        <a class="refAdminUser" title="deactivate user"
+                           href="/api/admin/session/history/{{session.id}}">
+                            <i class="fa fa-arrow-left"></i>Accéder à la liste des commandes<i
+                                class="fa fa-arrow-right"></i>
+                        </a>
+                    </button>
+                </h3>
+            </div>
+            <div class="session-details-{{session.id}} collapse">
+                <div class="bo-session-details">
+                    <h4>Session details :</h4>
+                    <li>Start hour : {{ moment(session.startHour).format('HH:mm') }}</li>
+                    <li>End hour : {{ moment(session.endHour).format('HH:mm') }}</li>
+                    <li>Provider price : {{session.providerPrice}} euros</li>
+                    <li>Pizza price : {{session.pizzaPrice}} euros</li>
+                    <li>Total session price : {{session.totalPrice}} euros</li>
+                </div>
+
+            </div>
+        </div>
+        </div>
+
+    {% endfor %}
+</div>
 {% endblock %}
 
 {% block footer %}

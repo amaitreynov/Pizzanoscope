@@ -164,15 +164,46 @@ router.get('/session/close', function (req, res) {
 /* GET all the history */
 router.get('/session/history', function (req, res) {
     Session.find().exec(function (err, sessions) {
-        res.render('Administration/back-history-session', sessions);
+        logger.info(sessions);
+        res.render('Administration/back-history-session', {sessions: sessions});
     });
     //res.write('hello');
 });
 
 /* GET the details of an old session */
-router.get('/session/history/:sessionId', function (req, res) {
-    Order.find().exec(function (err, orders) {
-        res.render('Administration/back-history-session', orders);
+router.get('/session/history/:value', function (req, res) {
+    logger.info('sessionId :'+req.params.value);
+    Session.findOne(
+        {_id: req.params.value},
+        function (err, sessionFinded) {
+        if (err) {
+            logger.error('Error while getting current session:' + err);
+        }
+        if (_.isNull(sessionFinded) || _.isEmpty(sessionFinded)) {
+            Session.find().exec(function (err, sessions) {
+                logger.info(sessions);
+                res.render('Administration/back-history-session', {sessions: sessions});
+            });
+        } else {
+            Order.find({})//.find({user:req.params.value})
+                .populate('user')
+                .exec(function (err, orders) {
+                    if (err) logger.error(err.message);
+                    //logger.debug('Orders:' + orders);
+
+                    //res.json(orders);
+                    Pizza.find().exec(function (err, pizzas) {
+                        //res.json(pizzas);
+                        logger.debug('displaying retrieved  session :' + sessionFinded);
+                        res.render('Administration/back-history-details-session', {
+                            liveSession: sessionFinded,
+                            orders: orders,
+                            pizzas: pizzas
+                        });
+                    });
+                });
+
+        }
     });
     //res.write('hello');
 });

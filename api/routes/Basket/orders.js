@@ -57,7 +57,7 @@ router.get('/paypal', function (req, res, next) {
         }]
     };
 
-    var cookieOrder = new Cookies(req, res).get("order");
+    var cookieOrder  = req.cookies.OrderCookie;
 
     if (cookieOrder != undefined && cookieOrder != null && cookieOrder != "") {
         /*parseOrderPaypalJson(paymentDescription, cookieOrder);
@@ -85,9 +85,8 @@ router.get('/paypal', function (req, res, next) {
 });
 
 router.get('/success', function (req, res) {
-    var cookieOrder = req.cookies.OrderCookie;
 
-    var cookieJson = JSON.parse(cookieOrder);
+    var cookieJson = req.cookies.OrderCookie;
     Order.update({_id: cookieJson._id},
         {
             $set: {

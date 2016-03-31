@@ -54,10 +54,10 @@ module.exports.handleToken = function (req, res, next) {
     } else { //connection required
         if (accessToken) {//token provided
             jwt.verify(accessToken, config.secret, function (err, decoded) {
-                logger.info('-- CONNECTION REQUIRED -- TEST');
+                // logger.info('-- CONNECTION REQUIRED -- TEST');
                 if (err) {//invalid token
                     logger.error('Error while decoding token:' + err.message);
-                    res.redirect('/');
+                    res.redirect('/api/login/Error while connecting, please retry.');
                 }
                 else {//token verified and valid
                     logger.debug(decoded._doc.admin);
@@ -76,7 +76,7 @@ module.exports.handleToken = function (req, res, next) {
         } else {
             //no token provided
             logger.info('-- CONNECTION REQUIRED -- No token provided, redirecting...');
-            res.redirect('/');
+            res.redirect('/api/login/Missing or invalid token provided. Please login.');
         }
     }
 };

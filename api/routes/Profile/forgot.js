@@ -20,13 +20,18 @@ router.get('/:value', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-    var emailInput;
-    if (!_.isNull(req.body.AdminRecoverEmail))
-        emailInput =  req.body.AdminRecoverEmail;
-    else
+    var emailInput = null;
+    if (req.body.AdminRecoverEmail) {
+        emailInput = req.body.AdminRecoverEmail;
+        // logger.debug('Email input from admin: '+emailInput);
+    }
+    else if (req.body.email){
         emailInput = req.body.email;
+        // logger.debug('Email input from user: '+emailInput);
+    }
 
-    var registerErr = null;
+    // logger.debug('Email input : '+emailInput);
+    var registerErr, message = null;
     logger.info('Processing sending password recovery mail...');
     //res.redirect('/api/login/API non implementee');
     //res.render('SignUp/signUp', {title: 'S\'inscrire'});
@@ -43,7 +48,7 @@ router.post('/', function (req, res) {
                     //todo flash info / notify the user with a message
                     registerErr = 'No account with that email address exists.';
                     logger.error(registerErr);
-                    return res.redirect('/forgot');
+                    return res.redirect('/api/forgot/'+registerErr);
                 }
 
                 user.resetPasswordToken = token;
@@ -57,8 +62,9 @@ router.post('/', function (req, res) {
         function (token, user, done) {
             emailUtils.dispatchResetPasswordLink(user, token, function (err) {
                 //todo flash info / notify the user with a message
-                logger.info('An e-mail has been sent to ' + user.email + ' with further instructions.');
-                done(err, 'done');
+                message = 'An e-mail has been sent to ' + user.email + ' with further instructions.';
+                logger.info(message);
+                return res.redirect('/api/login/'+message);
             });
         }
     ], function (err) {

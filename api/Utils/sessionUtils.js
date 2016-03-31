@@ -40,7 +40,6 @@ module.exports.getCurrentSession = function (next) {
  - Returns: callback with the created session 
  error if it's the case or if object from db is null/empty
  */
-//TODO add parameters needed to create the session
 module.exports.createSession = function (req, next) {
     logger.info('Creating a new session...');
     //logger.debug(moment(req.body.CreateSessionEndDate+' '+req.body.CreateSessionEndHour,'YYYY-MM-DD HH:mm'));
@@ -95,9 +94,11 @@ module.exports.addOrderInSessionOrderList = function (orderToAdd, next) {
             //calculate new session totalPrice
             if(newTotalPrice){
                 //set the totalPrice
+                logger.debug('totalPrice exists, adding new order totalPrice to it');
                 newTotalPrice += orderToAdd.totalPrice;
             }
             else if(!newTotalPrice){
+                logger.debug('totalPrice doesn\'t exist, setting it to new order\s totalPrice');
                 newTotalPrice = orderToAdd.totalPrice;
             }
             // logger.debug('Final newTotalPrice: ' + newTotalPrice);
@@ -124,7 +125,7 @@ module.exports.addOrderInSessionOrderList = function (orderToAdd, next) {
                         return next(err, null);
                     }
                     if (_.isNull(sessionUpdated) || _.isEmpty(sessionUpdated)) {
-                        return next({error: 'Bad object from DB for pizza'}, null);
+                        return next({error: 'Bad object from DB for session'}, null);
                     }
                     else {
                         // logger.debug('Updated order:' + orderUpdated);
@@ -200,11 +201,48 @@ module.exports.removeOrderFromSession = function (order, sessionToUpdate, next) 
         });
 };
 
+module.exports.updateSessionTotalPrice = function (flag, incPrice, next){
+    
+    //get current session
+    //update session's totalPrice
+    exports.getCurrentSession(function (err, session) {
+        if (err) {
+            return next(err, null);
+        }
+        else {
+            var newTotalPrice = session.totalPrice;
+            //calculate new session totalPrice
+            if(flag === '+'){
+                newTotalPrice += incPrice;
+            }
+            else if(flag === '-'){
+                newTotalPrice += incPrice;
+            }
 
-//TODO add updateSession method with flags
-// => update the orderList with updated order
-// => update the totalPrice attr 
-
+            Session.findOneAndUpdate(
+                {_id: session._id},
+                {
+                    $set: {
+                        updated_at: Date.now(),
+                        totalPrice: newTotalPrice
+                    }
+                },
+                {new: true},
+                function (err, sessionUpdated) {
+                    if (err) {
+                        return next(err, null);
+                    }
+                    if (_.isNull(sessionUpdated) || _.isEmpty(sessionUpdated)) {
+                        return next({error: 'Bad object from DB for session'}, null);
+                    }
+                    else {
+                        // logger.debug('Updated order:' + orderUpdated);
+                        return next(null, sessionUpdated);
+                    }
+                });
+        }
+    });
+};
 
 /*
  - Action: delete the given order from the DB

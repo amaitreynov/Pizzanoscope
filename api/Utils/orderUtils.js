@@ -13,10 +13,9 @@ var Class = mongoose.model('Class');
 var sessionUtils = require('./sessionUtils');
 
 /*
- - Action: Adds a pizza to  the pizzaList attribute of the provided order
+ - Action: Adds a pizza to the pizzaList attribute of the provided order
  - Returns: callback with the updated order
  */
-//TODO add session update
 module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, next) {
     logger.info('adding the pizza ' + JSON.stringify(pizzaToAdd._id) + ' to pizzaList of order ' + JSON.stringify(orderToUpdate._id));
 
@@ -47,17 +46,16 @@ module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, n
                 return next({error: 'Bad object from DB for pizza'}, null);
             }
             else {
-                // sessionUtils.getCurrentSession(function (err, session) {
-                //     if (err) {
-                //         return next(err, null);
-                //     }
-                //     else {
-                //         //TODO handle session update when adding a pizza to orderList
-                //         // => updateSessionTotalPrice
-                //     }
-                // });
-                // logger.debug('Updated order:' + orderUpdated);
-                return next(null, orderUpdated);
+                sessionUtils.updateSessionTotalPrice('+', pizzaToAdd.price, function (err, updatedSession) {
+                    if (err) {
+                        return next(err, null);
+                    }
+                    else {
+                        logger.debug('Updated session:' + updatedSession);
+                        // logger.debug('Updated order:' + orderUpdated);
+                        return next(null, orderUpdated);
+                    }
+                });
             }
         });
 };

@@ -31,12 +31,12 @@ EM.dispatchAccountValidationLink = function (user, callback) {
     }, function (err, info) {
         if (err) {
             logger.error("got an error: "+err.message);
-            callback(err);
+            callback(err, null);
         }
         else {
             logger.info('Message successfully sent to mail:' + user.email);
-            // logger.info('Response: ' + info);
-            callback();
+            logger.info('Response: ' + info);
+            callback(null, user.email);
         }
     });
 };

@@ -45,6 +45,7 @@ router.post('/addUser', function (req, res) {
                                 //send email
                                 emailUtils.dispatchAccountValidationLink(user, function (err, userEmail) {
                                     if (!err) {
+                                        logger.debug('Email confirmation sent to : '+userEmail);
                                         res.render('SignUp/signUpSuccess', {
                                             registerSuccess: "Merci, vous êtes bien inscrit !\n" +
                                             "Un email contenant un lien de confirmation de votre adresse mail\n" +

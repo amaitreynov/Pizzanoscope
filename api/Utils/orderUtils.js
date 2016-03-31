@@ -40,7 +40,9 @@ module.exports.addPizzaInOrderPizzaList = function (pizzaToAdd, orderToUpdate, n
         {new: true},
         function (err, orderUpdated) {
             if (err) {
-                return next(err, null);
+                logger.error('error while modifying order' + err);
+                //return next(err, null);
+                throw err;
             }
             if (_.isNull(orderUpdated) || _.isEmpty(orderUpdated)) {
                 return next({error: 'Bad object from DB for pizza'}, null);
@@ -199,10 +201,18 @@ module.exports.removePizzaFromOrder = function (pizza, orderToUpdate, next) {
                         return next(err, null);
                     }
                     else {
-                        //TODO handle session update when removing a pizza from pizzaList
-                        // => updateSessionTotalPrice
-                        logger.debug('OrderUpdated : '+ orderUpdated);
-                        return next(null, orderUpdated);
+                        logger.debug('Price of the pizza to remove : ' + pizza.price);
+                        sessionUtils.updateSessionTotalPrice('-', pizza.price, function (err, updatedSession) {
+                            if (err) {
+                                return next(err, null);
+                            }
+                            else {
+                                logger.debug('Updated session:' + updatedSession);
+                                logger.debug('OrderUpdated : ' + orderUpdated);
+                                // logger.debug('Updated order:' + orderUpdated);
+                                return next(null, orderUpdated);
+                            }
+                        });
                     }
                 });
         });
@@ -220,18 +230,22 @@ module.exports.deleteOrder = function (orderToDelete, next) {
     Order.findOne({_id: orderToDelete._id},
         function (err, order) {
             if (err) {
-                return next(err);
+                logger.error('error while finding order : ' + err.message);
+                throw err;
+                //return next(err);
             }
             if (_.isNull(order) || _.isEmpty(order)) {
                 return next({error: 'Bad object from DB for order'});
             }
             else {
+                logger.info('retrived order : ' + order);
                 // logger.debug('orderToRemove :' + order);
 
                 //delete the order 1st
                 Order.remove({_id: orderToDelete._id},
                     function (err, orderRemoved) {
                         if (err) {
+                            logger.error('error while removing order : ' + orderRemoved);
                             return next(err);
                         }
                         if (_.isNull(orderRemoved) || _.isEmpty(orderRemoved)) {
@@ -242,6 +256,7 @@ module.exports.deleteOrder = function (orderToDelete, next) {
                             logger.debug('Number of rows affected :' + orderRemoved);
 
                             //then the pizzas in order
+
                             order.pizzaList.forEach(function (item) {
                                 Pizza.remove({_id: item}, function (err, pizzaRemoved) {
                                     if (err) {
@@ -252,11 +267,28 @@ module.exports.deleteOrder = function (orderToDelete, next) {
                                     }
                                 });
                             });
-                            //TODO handle session update when removing an order from orderList
-                            // => removeOrderFromSession with flag - (or remove)
-                            // logger.debug('alright');
-                            //return next
-                            return next(null);
+
+                            sessionUtils.updateSessionTotalPrice('-', order.totalPrice, function (err, updatedSession) {
+                                if (err) {
+                                    return next(err);
+                                }
+                                else {
+                                    logger.debug('Updated session:' + updatedSession);
+                                    logger.debug('get the current session : ' + updatedSession);
+                                    sessionUtils.removeOrderFromSession(orderToDelete, updatedSession, function (err, sessionUpdated) {
+                                        if (err) {
+                                            logger.error('error while removing order : ' + err.message);
+                                            return next(err.message);
+                                        } else {
+                                            logger.info('Order Removed from session : ' + sessionUpdated);
+                                            return next(null);
+                                        }
+
+                                    });
+                                }
+                            });
+
+
                         }
                     });
             }

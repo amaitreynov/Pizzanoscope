@@ -171,10 +171,12 @@ module.exports.removeOrderFromSession = function (order, sessionToUpdate, next) 
             //TODO catch error in this function if happens
             //logger.debug('Deleting Pizza :'+pizza);
             var orderListTemp = sessionFinded.orderList;
+            var orderIdToRemove = order._id;
             orderListTemp.forEach(function (item) {
-                // logger.debug('Item :' + item);
-                if (order.equals(item)) {
-                    // logger.debug('Removed Pizza :' + item);
+                logger.debug('Item :' + item);
+                logger.debug('order Id to remove :'+orderIdToRemove);
+                if (orderIdToRemove == item) {
+                    logger.debug('order to remove :' + orderIdToRemove);
                     orderListTemp.splice(orderListTemp.indexOf(item), 1);
                     //logger.debug(PizzaListTemp.indexOf(item));
                 }
@@ -202,7 +204,7 @@ module.exports.removeOrderFromSession = function (order, sessionToUpdate, next) 
 };
 
 module.exports.updateSessionTotalPrice = function (flag, incPrice, next){
-    
+
     //get current session
     //update session's totalPrice
     exports.getCurrentSession(function (err, session) {
@@ -216,7 +218,7 @@ module.exports.updateSessionTotalPrice = function (flag, incPrice, next){
                 newTotalPrice += incPrice;
             }
             else if(flag === '-'){
-                newTotalPrice += incPrice;
+                newTotalPrice -= incPrice;
             }
 
             Session.findOneAndUpdate(

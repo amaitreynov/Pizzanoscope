@@ -18,9 +18,10 @@
   ],
   "_comment": "Required Connection / Relative Link",
   "adminRequiredBeginLinks": [
-    "/api/admin"
+    "/api/admin/"
   ],
   "_comment": "Required connection / Strict Link",
   "adminRequiredStrictLinks": [
+    "/api/admin/"
   ]
 }

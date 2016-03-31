@@ -24,10 +24,10 @@ router.get('/delelePizza/:value1', function (req, res) {
     if (orderToUpdate.pizzaList.length == 1) {
         //only one pizza left, directly remove basket
         //delete the order and clear OrderCookie
+        logger.info('delete order because there is 1 pizza');
         orderUtils.deleteOrder(orderToUpdate, function (err) {
             if (err) {
                 logger.error(err.message);
-                throw err.message;
             }
             else {
                 logger.debug('order successfully deleted because it was the last pizza');
@@ -78,25 +78,15 @@ router.get('/cleanBasket/', function (req, res) {
     var orderToDelete = req.cookies.OrderCookie;
     logger.debug('value:' + orderToDelete._id);
 
-    Order.findOne({_id: orderToDelete._id}, function (err, order) {
-        if (err) logger.error(err.message);
-
-        // logger.debug('Order finded :'+order);
-        Order.remove({_id: order._id}, function (err, orderRemoved) {
-            if (err) logger.error(err.message);
-            // logger.debug('Order Removed :' + orderRemoved);
-
-            order.pizzaList.forEach(function (item) {
-                Pizza.remove({_id: item}, function (err, pizzaRemoved) {
-                    if (err) logger.error(err.message);
-                    // logger.debug('Removed pizza :' + pizzaRemoved);
-                    //TODO handle session update when removing an order from orderList
-                    //=>removeOrderFromSession
-                });
-            });
+    orderUtils.deleteOrder(orderToDelete, function (err) {
+        if (err) {
+            logger.error(err.message);
+        }
+        else {
+            logger.debug('order successfully deleted because it was the last pizza');
             res.clearCookie('OrderCookie');
             res.redirect('/api/product/getAll');
-        });
+        }
     });
 });
 
@@ -157,7 +147,7 @@ router.get('/addPizza/name/:value1', function (req, res) {
         //create new pizza
         orderUtils.createPizza(req, function (err, createdPizza) {
             if (err) {
-                logger.error(err.message);
+                logger.error(err);
             }
             else {
                 //add pizza in pizzaList of order from cookie
@@ -165,7 +155,7 @@ router.get('/addPizza/name/:value1', function (req, res) {
                 orderUtils.addPizzaInOrderPizzaList(createdPizza, orderCookieJson, function (err, updatedOrder) {
                     if (err) {
                         logger.error(err.message);
-                        throw err.message;
+                        //throw err.message;
                     }
                     //TODO handle with a message in view instead of status
                     if (_.isNull(updatedOrder) || _.isEmpty(updatedOrder)) {

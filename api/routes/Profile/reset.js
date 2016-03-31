@@ -16,7 +16,7 @@ router.get('/:token', function (req, res) {
         if (!user) {
             logger.error('Password reset token is invalid or has expired.');
             //todo flash info / notify the user with a message
-            return res.redirect('/api/forgot/Password reset token is invalid or has expired.');
+            return res.redirect('/api/login/Password reset token is invalid or has expired.');
         }
         else {
             res.render('User/resetPassword', {title: 'Reset Password', resetPasswordToken: req.params.token});
@@ -29,6 +29,12 @@ router.post('/:token', function (req, res) {
     logger.debug('newpassword:' + req.body.password);
     logger.debug('newpasswordConfirmation:' + req.body.passwordConfirmation);
     if (req.body.password != req.body.passwordConfirmation) {
+        //todo flash info / notify the user with a message
+        logger.error('Passwords aren\'t the same.');
+        return res.redirect('back');
+    }
+    else if (_.isEmpty(req.body.password) || _.isEmpty(req.body.password)
+        || (_.isEmpty(req.body.password) && _.isEmpty(req.body.passwordConfirmation))) {
         //todo flash info / notify the user with a message
         logger.error('Passwords aren\'t the same.');
         return res.redirect('back');

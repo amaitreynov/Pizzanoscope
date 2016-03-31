@@ -184,7 +184,8 @@ module.exports.removePizzaFromOrder = function (pizza, orderToUpdate, next) {
             });
             // logger.debug('updated pizzaList to update ' + pizzaListTemp);
 
-            orderFinded.update(
+            Order.findOneAndUpdate(
+                {_id: orderFinded._id},
                 {
                     $set: {
                         updated_at: Date.now(),
@@ -193,14 +194,15 @@ module.exports.removePizzaFromOrder = function (pizza, orderToUpdate, next) {
                     }
                 },
                 {new: true},
-                function (err) {
+                function (err, orderUpdated) {
                     if (err) {
                         return next(err, null);
                     }
                     else {
                         //TODO handle session update when removing a pizza from pizzaList
                         // => updateSessionTotalPrice
-                        return next(null, orderFinded);
+                        logger.debug('OrderUpdated : '+ orderUpdated);
+                        return next(null, orderUpdated);
                     }
                 });
         });

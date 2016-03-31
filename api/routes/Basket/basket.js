@@ -102,15 +102,15 @@ router.get('/cleanBasket/', function (req, res) {
 
 //TODO add session update
 router.get('/addPizza/name/:value1', function (req, res) {
-    var orderCookie = req.cookies.OrderCookie;
-    logger.debug('order cookie:' + orderCookie);
+    var orderCookieJson = req.cookies.OrderCookie;
+    logger.debug('order cookie:' + JSON.stringify(orderCookieJson));
     /*if order is not created:
      -create a new pizza
      -create a new order with previously created pizza
      -replace cookie with created order
      */
     //order cookie isn't present
-    if (!orderCookie || _.isNull(orderCookie)) {
+    if (!orderCookieJson || _.isNull(orderCookieJson)) {
         logger.info('----------------No order cookie present------------');
         var token = req.cookies.access_token;
         //TODO optimization: check that user is defined (decoding went well)
@@ -162,7 +162,7 @@ router.get('/addPizza/name/:value1', function (req, res) {
             else {
                 //add pizza in pizzaList of order from cookie
                 // logger.info('order id ' + JSON.parse(new Cookies(req, res).get("order")));
-                orderUtils.addPizzaInOrderPizzaList(createdPizza, orderCookie, function (err, updatedOrder) {
+                orderUtils.addPizzaInOrderPizzaList(createdPizza, orderCookieJson, function (err, updatedOrder) {
                     if (err) {
                         logger.error(err.message);
                         throw err.message;

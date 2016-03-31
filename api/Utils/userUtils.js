@@ -19,9 +19,11 @@ var debug = require('debug')('app:utils:' + process.pid),
 
 module.exports.authenticate = function (req, res, next) {
     logger.info("Processing authenticate middleware");
-
+    var registerError, message, route = null;
     if (_.isEmpty(req.body.email) || _.isEmpty(req.body.password)) {
-        res.redirect('/api/Login/Missing email or password');
+        registerError = 'Missing email or password';
+        return next(null, null, registerError);
+        // res.redirect('/api/Login/Missing email or password');
         /*return next(new UnauthorizedAccessError("401", {
          message: 'Invalid username or password'
          }));*/
@@ -33,9 +35,18 @@ module.exports.authenticate = function (req, res, next) {
         User.findOne({
             email: email
         }, function (err, user) {
-            if (err || !user) {
+            if (err) {
                 logger.error(err);
-                res.redirect('/api/Login/Invalid email or password');
+                return next(err, null, null);
+                // res.redirect('/api/Login/Invalid email or password');
+                /*return next(new UnauthorizedAccessError("401", {
+                 message: 'Invalid email or password'
+                 }));*/
+            }
+            if (!user) {
+                message = 'Invalid email or password';
+                return next(null, null, message);
+                // res.redirect('/api/Login/Invalid email or password');
                 /*return next(new UnauthorizedAccessError("401", {
                  message: 'Invalid email or password'
                  }));*/
@@ -47,17 +58,23 @@ module.exports.authenticate = function (req, res, next) {
                         securityUtil.createToken(user, function (token, err) {
                             if (err)
                                 logger.error(err.message);
-
-                            securityUtil.createCookie(token, req, res, function (err) {
-                                if (err)
-                                    logger.error(err.message);
-
-                                res.redirect('/api/product/getAll');
-                            });
+                            else {
+                                securityUtil.createCookie(token, req, res, function (err) {
+                                    if (err)
+                                        logger.error(err.message);
+                                    else {
+                                        route = '/api/product/getAll';
+                                        return next(null, route, null);
+                                        // res.redirect('/api/product/getAll');
+                                    }
+                                });
+                            }
                         });
 
                     } else {
-                        res.redirect('/api/Login/Invalid email or password');
+                        message = 'Invalid email or password';
+                        return next(null, null, message);
+                        // res.redirect('/api/Login/Invalid email or password');
                         /*return next(new UnauthorizedAccessError("401", {
                          message: 'Invalid email or password'
                          }));*/
@@ -65,7 +82,9 @@ module.exports.authenticate = function (req, res, next) {
                 });
             }
             else {
-                res.redirect('/api/Login/Invalid Account, Check your verification email');
+                message = 'Invalid Account, Check your verification email';
+                return next(null, null, message);
+                // res.redirect('/api/Login/Invalid Account, Check your verification email');
                 // return next(new UnauthorizedAccessError("401", {
                 //     message: 'Invalid Account, Check your verification email'
                 // }));

@@ -21,17 +21,17 @@ var Order = mongoose.model('Order'),
     Class = mongoose.model('Class');
 
 router.get(('/'), function (req, res) {
-    logger.info('Rendering login page');
+    logger.info('Rendering login page from / route');
     res.render('Login/Login', {title: 'Login'});
 });
 
 router.get(('/Login'), function (req, res) {
-    logger.info('Rendering login page');
+    logger.info('Rendering login page from /login route');
     res.render('Login/Login', {title: 'Login'});
 });
 
 router.get(('/Login/:value'), function (req, res) {
-    logger.info('Rendering login page');
+    logger.info('Rendering login page from /login/:value route');
     res.render('Login/Login', {title: 'Login', message: req.params.value});
 });
 
@@ -40,7 +40,19 @@ router.get(('/Logout'), function (req, res) {
 });
 
 router.post(('/Login'), function (req, res, next) {
-    userUtil.authenticate(req, res, next);
+    userUtil.authenticate(req, res, function(err, route, message){
+        if(err){
+            logger.error(err.message);
+        }
+        else if(message){
+            logger.warn('Could not access the page because'+message);
+            res.redirect(message);
+        }
+        else{
+            logger.info('Good to go to '+route);
+            res.redirect(route);
+        }
+    });
 });
 
 router.unless = require('express-unless');

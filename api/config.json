@@ -6,7 +6,7 @@
     "/api/validate",
     "/api/forgot",
     "/api/reset",
-    "/api/login/"
+    "/api/login"
   ],
   "_comment": "No connection required / Strict Link",
   "disconnectedStrictLinks": [

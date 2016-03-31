@@ -43,7 +43,7 @@ module.exports.createCookie = function (jsonToken, req, res, callback) {
 
 module.exports.handleToken = function (req, res, next) {
     var accessToken = req.cookies.access_token;
-    logger.info(accessToken);
+    logger.info('access_token :'+accessToken);
     // var accessToken = new Cookies(req, res).get('access_token');
 
     logger.info('-- EVALUATING CONNECTION --');
@@ -76,7 +76,8 @@ module.exports.handleToken = function (req, res, next) {
         } else {
             //no token provided
             logger.info('-- CONNECTION REQUIRED -- No token provided, redirecting...');
-            res.redirect('/api/login/Missing or invalid token provided. Please login.');
+            res.redirect('/');
+            // res.redirect('/api/login/Missing or invalid token provided. Please login.');
         }
     }
 };

@@ -43,6 +43,7 @@ module.exports.createCookie = function (jsonToken, req, res, callback) {
 
 module.exports.handleToken = function (req, res, next) {
     var accessToken = req.cookies.access_token;
+    logger.info(accessToken);
     // var accessToken = new Cookies(req, res).get('access_token');
 
     logger.info('-- EVALUATING CONNECTION --');
@@ -59,11 +60,12 @@ module.exports.handleToken = function (req, res, next) {
                     res.redirect('/');
                 }
                 else {//token verified and valid
+                    logger.debug(decoded._doc.admin);
                     logger.info('-- CONNECTION REQUIRED & ADMIN -- Evaluating admin permission');
                     //verifying if url attempted needs admin permission and permission is granted
-                    if (isAdminRequiredLink(req.url) && decoded.admin == false) {
+                    if (isAdminRequiredLink(req.url) && decoded._doc.admin == false) {
                         logger.info('-- CONNECTION REQUIRED & ADMIN -- Couldn\'t get admin permission');
-                        res.redirect('/');
+                        res.redirect('/api/product/getAll');
                     }
                     else {//no admin permission required to access this page
                         logger.info('-- CONNECTION REQUIRED -- No admin required, letting go...');
